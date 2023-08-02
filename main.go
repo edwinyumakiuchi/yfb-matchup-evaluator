@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"os"
-	"io"
+
+	"yfb-matchup-evaluator/util"
 
     "github.com/gorilla/pat"
 	"github.com/markbates/goth"
@@ -21,6 +22,7 @@ type ProviderIndex struct {
 func main() {
 	r := pat.New()
 
+    // prereq: https://github.com/esplo/docker-local-ssl-termination-proxy/blob/master/Dockerfile
 	goth.UseProviders(
 		yahoo.New(os.Getenv("YAHOO_KEY"), os.Getenv("YAHOO_SECRET"), "https://localhost"),
 	)
@@ -32,35 +34,38 @@ func main() {
             return
         }
 
-        // Build the URL with the access token and the specific API endpoint.
-        apiURL := "https://fantasysports.yahooapis.com/fantasy/v2/team/418.l.33024.t.4/roster"
-        apiReq, apiErr := http.NewRequest("GET", apiURL, nil)
+        // Call the function in yahooUtil.go to fetch the API data.
+        apiBody, apiErr := util.GetAPIData(user.AccessToken)
         if apiErr != nil {
-            fmt.Println("Error creating request:", apiErr)
-            return
-        }
-        apiReq.Header.Set("Authorization", "Bearer "+user.AccessToken)
-
-        client := &http.Client{}
-        apiResp, apiErr := client.Do(apiReq)
-        if apiErr != nil {
-            fmt.Println("Error making request:", apiErr)
-            return
-        }
-        defer apiResp.Body.Close()
-
-        if apiResp.StatusCode != http.StatusOK {
-            fmt.Printf("API responded with status code %d\n", apiResp.StatusCode)
+            fmt.Println(apiErr)
             return
         }
 
-        apiBody, apiErr := io.ReadAll(apiResp.Body)
-        // fmt.Println("Response Body:", string(apiBody))
+        // Parse the API data and get the desired JSON
+        jsonBytes, jsonErr := util.ParseData(apiBody)
+        if jsonErr != nil {
+            fmt.Println(jsonErr)
+            return
+        }
+
+        mongoErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(jsonBytes))
+        if mongoErr != nil {
+            fmt.Println("Error:", mongoErr)
+        } else {
+            fmt.Println("Data inserted successfully!")
+        }
 
         // Send the roster data as a JSON response
         res.Header().Set("Content-Type", "application/json")
         res.WriteHeader(http.StatusOK)
-        res.Write(apiBody)
+        res.Write(jsonBytes)
+    })
+
+    r.Get("/home", func(res http.ResponseWriter, req *http.Request) {
+        // Send the roster data as a JSON response
+        res.Header().Set("Content-Type", "application/json")
+        res.WriteHeader(http.StatusOK)
+        // res.Write(jsonBytes)
     })
 
 	r.Get("/logout/{provider}", func(res http.ResponseWriter, req *http.Request) {
