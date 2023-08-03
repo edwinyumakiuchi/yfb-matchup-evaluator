@@ -10,11 +10,19 @@ import (
 )
 
 const API_ENDPOINT = "https://us-west-2.aws.data.mongodb-api.com/app/data-natmv/endpoint/data/v1/action/"
+const API_DELETEMANY_ENDPOINT = "deleteMany"
 const API_INSERTONE_ENDPOINT = "insertOne"
 const CONFIG_FILE_PATH = "./config.yaml"
 
 type Config struct {
 	MongoKey string `yaml:"mongo_key"`
+}
+
+type DeleteRequest struct {
+	DataSource string     `json:"dataSource"`
+	Database   string     `json:"database"`
+	Collection string     `json:"collection"`
+	Filter   map[string]interface{} `json:"filter"`
 }
 
 type InsertRequest struct {
@@ -37,6 +45,46 @@ func readConfig() (*Config, error) {
 	}
 
 	return config, nil
+}
+
+func DeleteDocuments(dataSource, database, collection string) error {
+    config, err := readConfig()
+	if err != nil {
+		return err
+	}
+
+	deleteData := DeleteRequest{
+		DataSource: dataSource,
+		Database:   database,
+		Collection: collection,
+		Filter:     map[string]interface{}{},
+	}
+
+	requestBody, err := json.Marshal(deleteData)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", API_ENDPOINT + API_DELETEMANY_ENDPOINT, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("api-key", config.MongoKey)
+
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("Collection %s: Error deleting data", collection)
+	}
+
+	return nil
 }
 
 func InsertOneDocument(dataSource, database, collection string, documentJSON string) error {
@@ -78,7 +126,7 @@ func InsertOneDocument(dataSource, database, collection string, documentJSON str
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("Collection %s: Error storing data", collection)
 	}
 

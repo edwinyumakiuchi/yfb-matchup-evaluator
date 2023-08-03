@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"strings"
 	"os"
+	"fmt"
+	"strings"
+    "net/http"
 
 	"yfb-matchup-evaluator/util"
 
@@ -22,7 +22,8 @@ type ProviderIndex struct {
 func main() {
 	r := pat.New()
 
-    // prereq: https://github.com/esplo/docker-local-ssl-termination-proxy/blob/master/Dockerfile
+    // TODO: convert to retrieve from config.yaml
+    // prereq: https://github.com/esplo/docker-local-ssl-termination-proxy/tree/master
 	goth.UseProviders(
 		yahoo.New(os.Getenv("YAHOO_KEY"), os.Getenv("YAHOO_SECRET"), "https://localhost"),
 	)
@@ -48,24 +49,21 @@ func main() {
             return
         }
 
-        mongoErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(jsonBytes))
-        if mongoErr != nil {
-            fmt.Println("Error:", mongoErr)
+        mongoDeleteErr := util.DeleteDocuments("Cluster0", "yahoo", "rosters")
+        if mongoDeleteErr != nil {
+            fmt.Println("Error:", mongoDeleteErr)
+        } else {
+            fmt.Println("Data deleted successfully!")
+        }
+
+        mongoInsertErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(jsonBytes))
+        if mongoInsertErr != nil {
+            fmt.Println("Error:", mongoInsertErr)
         } else {
             fmt.Println("Data inserted successfully!")
         }
 
-        // Send the roster data as a JSON response
-        res.Header().Set("Content-Type", "application/json")
-        res.WriteHeader(http.StatusOK)
-        res.Write(jsonBytes)
-    })
-
-    r.Get("/home", func(res http.ResponseWriter, req *http.Request) {
-        // Send the roster data as a JSON response
-        res.Header().Set("Content-Type", "application/json")
-        res.WriteHeader(http.StatusOK)
-        // res.Write(jsonBytes)
+        http.Redirect(res, req, "http://localhost:3000/?loggedIn=true", http.StatusFound)
     })
 
 	r.Get("/logout/{provider}", func(res http.ResponseWriter, req *http.Request) {
