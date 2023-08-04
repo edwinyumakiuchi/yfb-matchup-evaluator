@@ -2,10 +2,10 @@ package util
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"io/ioutil"
+	"encoding/json"
 	"gopkg.in/yaml.v2"
 )
 

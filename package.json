@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "backend": "go run main.go"
+    "backend": "docker run -d -e \"PORT=3000\" -p 443:443 --rm esplo/docker-local-ssl-termination-proxy && go run main.go"
   },
   "eslintConfig": {
     "extends": [

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"os"
 	"fmt"
 	"strings"
     "net/http"
+    "io/ioutil"
     "encoding/json"
+    "gopkg.in/yaml.v2"
 
 	"yfb-matchup-evaluator/util"
 
@@ -15,18 +16,45 @@ import (
 	"github.com/markbates/goth/providers/yahoo"
 )
 
+const CONFIG_FILE_PATH = "./config.yaml"
+
+type Config struct {
+	YahooClientID string `yaml:"yahoo_client_id"`
+	YahooClientSecret string `yaml:"yahoo_client_secret"`
+}
+
 type ProviderIndex struct {
 	Providers    []string
 	ProvidersMap map[string]string
 }
 
+// TODO: refactor with mongoUtil
+func readConfig() (*Config, error) {
+	data, err := ioutil.ReadFile(CONFIG_FILE_PATH)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &Config{}
+	err = yaml.Unmarshal(data, config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
 func main() {
 	r := pat.New()
 
-    // TODO: convert to retrieve from config.yaml
-    // prereq: https://github.com/esplo/docker-local-ssl-termination-proxy/tree/master
+    config, configErr := readConfig()
+    if configErr != nil {
+        return
+    }
+
+    // requires https://github.com/esplo/docker-local-ssl-termination-proxy/tree/master
 	goth.UseProviders(
-		yahoo.New(os.Getenv("YAHOO_KEY"), os.Getenv("YAHOO_SECRET"), "https://localhost"),
+		yahoo.New(config.YahooClientID, config.YahooClientSecret, "https://localhost"),
 	)
 
 	r.Get("/mongoData", func(res http.ResponseWriter, req *http.Request) {
