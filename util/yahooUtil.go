@@ -20,13 +20,14 @@ type Team struct {
 }
 
 type Roster struct {
-    XMLName xml.Name `xml:"roster"`
-    Players []Player `xml:"players>player"`
+    XMLName xml.Name  `xml:"roster"`
+    Players []Player  `xml:"players>player"`
 }
 
 type Player struct {
     XMLName xml.Name `xml:"player"`
     Name    string   `xml:"name>full"`
+    TeamAbbr string   `xml:"editorial_team_abbr"`
 }
 
 func GetAPIData(accessToken string) ([]byte, error) {
@@ -63,16 +64,20 @@ func ParseData(apiBody []byte) ([]byte, error) {
         return nil, fmt.Errorf("Error while parsing XML: %v", xmlErr)
     }
 
-    // Extract the player names from the roster
-    playerNames := make([]string, len(fc.Team.Roster.Players))
+    // Extract the player names and team abbreviation from the roster
+    playersWithTeam := make([]map[string]string, len(fc.Team.Roster.Players))
     for i, player := range fc.Team.Roster.Players {
-        playerNames[i] = player.Name
+        playerData := map[string]string{
+            "Player": player.Name,
+            "Team":   player.TeamAbbr,
+        }
+        playersWithTeam[i] = playerData
     }
 
     // Create the desired JSON structure
     resultJSON := map[string]interface{}{
-        "Team name": fc.Team.Name,
-        "Roster":    playerNames,
+        "Roster":       playersWithTeam,
+        "Fantasy Team": fc.Team.Name,
     }
 
     // Convert the JSON to a formatted string

@@ -31,7 +31,6 @@ function LogIn() {
 
 function Home() {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Make the HTTP request to the backend here
@@ -39,53 +38,71 @@ function Home() {
       .then((response) => response.json())
       .then((data) => {
         setData(data); // Access the 'documents' array from the data object
-        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        setLoading(false);
       });
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>Yahoo Fantasy Basketball: matchup evaluator</p>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          data ? (
-            <div>
-              {/* Render the data received from the backend */}
-              {data.map((player) => (
-                <div key={player.ID}>
-                  <p>Team Name: {player['Team name']}</p>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Player Names</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Render each player's name separately */}
-                      {player.Roster.map((playerName, index) => (
-                        <tr key={index}>
-                          <td>{playerName}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
+    <div style={{ marginLeft: '20px' }}>
+      {data ? (
+        <div>
+          <p></p>
+          {/* Render the data received from the backend */}
+          {data.map((player, index) => (
+            <div key={index}>
+              <p>Team: {player['Fantasy Team']}</p>
+              <table className="bordered-table">
+                <thead className="header-row">
+                  <tr>
+                    <th className="bold centered">PLAYER</th>
+                    <th className="bold centered">TEAM</th>
+                    <th className="bold centered">FGM</th>
+                    <th className="bold centered">FGA</th>
+                    <th className="bold centered">FG%</th>
+                    <th className="bold centered">FTM</th>
+                    <th className="bold centered">FTA</th>
+                    <th className="bold centered">FT%</th>
+                    <th className="bold centered">3PTM</th>
+                    <th className="bold centered">PTS</th>
+                    <th className="bold centered">REB</th>
+                    <th className="bold centered">AST</th>
+                    <th className="bold centered">ST</th>
+                    <th className="bold centered">BLK</th>
+                    <th className="bold centered">TO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {player.Roster.map((playerData, index) => (
+                    <tr key={index}>
+                      <td>{playerData.Player}</td>
+                      <td className="bold centered">{playerData.Team}</td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <>
-              <p>Failed to fetch data from the backend.</p>
-              {data && <p>{JSON.stringify(data)}</p>}
-            </>
-          )
-        )}
-      </header>
+          ))}
+        </div>
+      ) : (
+        <>
+          <p>Failed to fetch data from the backend.</p>
+        </>
+      )}
     </div>
   );
 }

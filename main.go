@@ -86,8 +86,6 @@ func main() {
             return
         }
 
-        // Now you can work with the players' data inside the "documents" array
-        // For example, you can marshal it back to JSON and send it as a response.
         responseJSON, responseErr := json.Marshal(documents)
         if responseErr != nil {
             http.Error(res, "Error encoding response data", http.StatusInternalServerError)
