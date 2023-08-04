@@ -9,24 +9,24 @@ import (
 )
 
 type FantasyContent struct {
-	XMLName xml.Name `xml:"fantasy_content"`
-	Team    Team     `xml:"team"`
+    XMLName xml.Name `xml:"fantasy_content"`
+    Team    Team     `xml:"team"`
 }
 
 type Team struct {
-	XMLName xml.Name `xml:"team"`
-	Name    string   `xml:"name"`
-	Roster  Roster   `xml:"roster"`
+    XMLName xml.Name `xml:"team"`
+    Name    string   `xml:"name"`
+    Roster  Roster   `xml:"roster"`
 }
 
 type Roster struct {
-	XMLName xml.Name `xml:"roster"`
-	Players []Player `xml:"players>player"`
+    XMLName xml.Name `xml:"roster"`
+    Players []Player `xml:"players>player"`
 }
 
 type Player struct {
-	XMLName xml.Name `xml:"player"`
-	Name    string   `xml:"name>full"`
+    XMLName xml.Name `xml:"player"`
+    Name    string   `xml:"name>full"`
 }
 
 func GetAPIData(accessToken string) ([]byte, error) {
@@ -70,8 +70,9 @@ func ParseData(apiBody []byte) ([]byte, error) {
     }
 
     // Create the desired JSON structure
-    resultJSON := map[string][]string{
-        fc.Team.Name: playerNames,
+    resultJSON := map[string]interface{}{
+        "Team name": fc.Team.Name,
+        "Roster":    playerNames,
     }
 
     // Convert the JSON to a formatted string

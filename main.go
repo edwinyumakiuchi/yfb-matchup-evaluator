@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
     "net/http"
+    "encoding/json"
 
 	"yfb-matchup-evaluator/util"
 
@@ -27,6 +28,47 @@ func main() {
 	goth.UseProviders(
 		yahoo.New(os.Getenv("YAHOO_KEY"), os.Getenv("YAHOO_SECRET"), "https://localhost"),
 	)
+
+	r.Get("/mongoData", func(res http.ResponseWriter, req *http.Request) {
+        accessToken, err := util.LoginHandler()
+        if err != nil {
+            fmt.Println("Error getting access token:", err)
+            return
+        }
+
+        players, mongoFindErr := util.GetPlayers(accessToken)
+        if mongoFindErr != nil {
+            fmt.Println("Error:", mongoFindErr)
+        } else {
+            fmt.Println("Data retrieved successfully!")
+        }
+
+        var playersData map[string]interface{}
+
+        playerJsonErr := json.Unmarshal([]byte(players), &playersData)
+        if playerJsonErr != nil {
+            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
+            return
+        }
+
+        // Access the "documents" array from playersData
+        documents, ok := playersData["documents"].([]interface{})
+        if !ok {
+            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
+            return
+        }
+
+        // Now you can work with the players' data inside the "documents" array
+        // For example, you can marshal it back to JSON and send it as a response.
+        responseJSON, responseErr := json.Marshal(documents)
+        if responseErr != nil {
+            http.Error(res, "Error encoding response data", http.StatusInternalServerError)
+            return
+        }
+
+        res.Header().Set("Content-Type", "application/json")
+        res.Write(responseJSON)
+	})
 
     r.Get("/auth/{provider}/callback", func(res http.ResponseWriter, req *http.Request) {
         user, err := gothic.CompleteUserAuth(res, req)
