@@ -93,15 +93,16 @@ function Home() {
                 return (
                   <React.Fragment key={game.date}>
                     <tr>
-                      <td className="bold centered">{game.date}</td>
-                      <td colSpan="16"></td>
+                      <td className="bold centered" rowSpan={playersForDate.length + 1}>
+                        {game.date}
+                      </td>
                     </tr>
                     {playersForDate.map((playerData, index) => (
                       <tr key={index}>
-                        <td></td>
                         <td>{playerData.Player}</td>
                         <td className="bold centered">{playerData.Team}</td>
                         <td className="bold centered">{playerData.Position}</td>
+                        <td className="bold centered"></td>
                         <td className="bold centered"></td>
                         <td className="bold centered"></td>
                         <td className="bold centered"></td>

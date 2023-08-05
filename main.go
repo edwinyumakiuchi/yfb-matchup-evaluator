@@ -118,7 +118,7 @@ func main() {
                 },
                 {
                     "date": "10/19/2023",
-                    "teams": ["LAL", "MIA", "LAC", "MIL"]
+                    "teams": ["LAL", "MIA", "LAC", "IND"]
                 },
                 {
                     "date": "10/20/2023",
