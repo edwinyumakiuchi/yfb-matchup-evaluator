@@ -28,6 +28,7 @@ type Player struct {
     XMLName xml.Name `xml:"player"`
     Name    string   `xml:"name>full"`
     TeamAbbr string   `xml:"editorial_team_abbr"`
+    Position string   `xml:"display_position"`
 }
 
 func GetAPIData(accessToken string) ([]byte, error) {
@@ -70,6 +71,7 @@ func ParseData(apiBody []byte) ([]byte, error) {
         playerData := map[string]string{
             "Player": player.Name,
             "Team":   player.TeamAbbr,
+            "Position":   player.Position,
         }
         playersWithTeam[i] = playerData
     }
