@@ -218,12 +218,12 @@ func InsertOneDocument(dataSource, database, collection string, documentJSON str
 }
 
 // Define a function to fetch players data
-func GetPlayers(accessToken string) (string, error) {
+func GetPlayers(database string, collection string, accessToken string) (string, error) {
 	// Define the request payload
 	payload := map[string]interface{}{
 		"dataSource": "Cluster0",
-		"database":   "yahoo",
-		"collection": "rosters",
+		"database":   database,
+		"collection": collection,
 		"filter":     map[string]interface{}{},
 	}
 

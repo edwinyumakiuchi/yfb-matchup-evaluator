@@ -72,7 +72,7 @@ func main() {
             return
         }
 
-        players, mongoFindErr := util.GetPlayers(accessToken)
+        players, mongoFindErr := util.GetPlayers("yahoo", "rosters", accessToken)
         if mongoFindErr != nil {
             fmt.Println("Error:", mongoFindErr)
         } else {
@@ -104,6 +104,45 @@ func main() {
         res.Write(responseJSON)
 	})
 
+	r.Get("/mongoProjectionData", func(res http.ResponseWriter, req *http.Request) {
+        accessToken, err := util.LoginHandler()
+        if err != nil {
+            fmt.Println("Error getting access token:", err)
+            return
+        }
+
+        players, mongoFindErr := util.GetPlayers("sample-nba", "projections", accessToken)
+        if mongoFindErr != nil {
+            fmt.Println("Error:", mongoFindErr)
+        } else {
+            fmt.Println("Data retrieved successfully!")
+        }
+
+        var playersData map[string]interface{}
+
+        playerJsonErr := json.Unmarshal([]byte(players), &playersData)
+        if playerJsonErr != nil {
+            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
+            return
+        }
+
+        // Access the "documents" array from playersData
+        documents, ok := playersData["documents"].([]interface{})
+        if !ok {
+            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
+            return
+        }
+
+        jsonData, err := json.Marshal(documents)
+        if err != nil {
+            http.Error(res, "Error converting data to JSON", http.StatusInternalServerError)
+            return
+        }
+
+        res.Header().Set("Content-Type", "application/json")
+        res.Write(jsonData)
+	})
+
 	r.Get("/schedule", func(res http.ResponseWriter, req *http.Request) {
         gameData := `
         {
@@ -114,7 +153,7 @@ func main() {
                 },
                 {
                     "date": "10/18/2023",
-                    "teams": ["HOU", "NOP", "SAS", "TOR", "PHX", "PHI", "UTA", "ORL", "ATL", "WAS", "NYK", "CHI", "OKL", "BKN", "MEM", "MIN", "DET", "DAL", "SAC", "POR", "CHA", "CLE", "GSW", "IND"]
+                    "teams": ["HOU", "NOP", "SAS", "TOR", "PHX", "PHI", "UTA", "ORL", "ATL", "WAS", "NYK", "CHI", "OKL", "BKN", "MEM", "MIN", "DET", "DAL", "SAC", "POR", "CHA", "CLE", "GSW", "MIL"]
                 },
                 {
                     "date": "10/19/2023",
@@ -122,7 +161,7 @@ func main() {
                 },
                 {
                     "date": "10/20/2023",
-                    "teams": ["ORL", "PHI", "TOR", "NOP", "WAS", "GSW", "NYK", "DEN", "MEM", "SAS", "HOU", "BOS", "UTA", "CHA", "DET", "ATL", "POR", "PHX", "IND", "BKN", "MIN", "CHI"]
+                    "teams": ["ORL", "PHI", "TOR", "NOP", "WAS", "GSW", "NYK", "DEN", "MEM", "SAS", "HOU", "BOS", "UTA", "CHA", "DET", "ATL", "POR", "BKN", "MIN", "CHI"]
                 },
                 {
                     "date": "10/21/2023",

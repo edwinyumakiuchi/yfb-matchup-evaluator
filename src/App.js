@@ -32,14 +32,14 @@ function LogIn() {
 
 function Home() {
   const [data, setData] = useState(null);
+  const [projectionData, setProjectionData] = useState(null);
   const [gameData, setGameData] = useState(null);
 
   useEffect(() => {
-    // Make the HTTP request to the backend here
-    fetch('/mongoData') // Replace '/api/data' with the appropriate backend API endpoint
+    fetch('/mongoData')
       .then((response) => response.json())
       .then((data) => {
-        setData(data); // Access the 'documents' array from the data object
+        setData(data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -47,11 +47,21 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    // Make the HTTP request to the backend here
-    fetch('/schedule') // Replace '/api/data' with the appropriate backend API endpoint
+    fetch('/mongoProjectionData')
       .then((response) => response.json())
       .then((data) => {
-        setGameData(data); // Access the 'documents' array from the data object
+        setProjectionData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('/schedule')
+      .then((response) => response.json())
+      .then((data) => {
+        setGameData(data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -60,7 +70,7 @@ function Home() {
 
   return (
     <div style={{ marginLeft: '20px' }}>
-      {data ? (
+      {data && projectionData ? (
         <div>
           <table className="bordered-table">
             <thead className="header-row">
@@ -97,26 +107,62 @@ function Home() {
                         {game.date}
                       </td>
                     </tr>
-                    {playersForDate.map((playerData, index) => (
-                      <tr key={index}>
-                        <td>{playerData.Player}</td>
-                        <td className="bold centered">{playerData.Team}</td>
-                        <td className="bold centered">{playerData.Position}</td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                        <td className="bold centered"></td>
-                      </tr>
-                    ))}
+
+                    {playersForDate.map((playerData, index) => {
+                      // Update the player names in projectionData before searching for the matched player
+                      const updatedProjectionData = projectionData.map((player) => {
+                        if (player.name === "PJ Washington") {
+                          return { ...player, name: "P.J. Washington" };
+                        } else {
+                          return player;
+                        }
+                      });
+
+                      // Find the player from updatedProjectionData that matches the current "Player" in playerData
+                      const matchedPlayer = updatedProjectionData.find((player) => player.name === playerData.Player);
+
+                      return (
+                        <tr key={index}>
+                          <td>{playerData.Player}</td>
+                          <td className="bold centered">{playerData.Team}</td>
+                          <td className="bold centered">{playerData.Position}</td>
+                          {matchedPlayer ? (
+                            <>
+                              <td className="bold centered">{matchedPlayer.fieldGoalMadeCalculated}</td>
+                              <td className="bold centered">{matchedPlayer.fieldGoalAttempt}</td>
+                              <td className="bold centered">{matchedPlayer.fieldGoal}</td>
+                              <td className="bold centered">{matchedPlayer.freeThrowMadeCalculated}</td>
+                              <td className="bold centered">{matchedPlayer.freeThrowAttempt}</td>
+                              <td className="bold centered">{matchedPlayer.freeThrow}</td>
+                              <td className="bold centered">{matchedPlayer.threePointMade}</td>
+                              <td className="bold centered">{matchedPlayer.points}</td>
+                              <td className="bold centered">{matchedPlayer.totalRebounds}</td>
+                              <td className="bold centered">{matchedPlayer.assists}</td>
+                              <td className="bold centered">{matchedPlayer.steals}</td>
+                              <td className="bold centered">{matchedPlayer.blocks}</td>
+                              <td className="bold centered">{matchedPlayer.turnovers}</td>
+                            </>
+                          ) : (
+                            // Render empty cells when matchedPlayer is not found
+                            <>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                              <td className="bold centered">0</td>
+                            </>
+                          )}
+                        </tr>
+                      );
+                    })}
                   </React.Fragment>
                 );
               })}
