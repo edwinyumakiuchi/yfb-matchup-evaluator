@@ -68,6 +68,46 @@ function Home() {
       });
   }, []);
 
+  const calculateField = (field) => {
+    if (!gameData || !data || !projectionData) return 0;
+
+    return gameData.data.reduce((total, game) => {
+      const playersForDate = data
+        .flatMap((player) => player.Roster)
+        .filter((playerData) => game.teams.includes(playerData.Team));
+
+      const updatedProjectionData = projectionData.map((player) => {
+        if (player.name === "PJ Washington") {
+          return { ...player, name: "P.J. Washington" };
+        } else {
+          return player;
+        }
+      });
+
+      const sumForField = playersForDate.reduce((sum, playerData) => {
+        const matchedPlayer = updatedProjectionData.find((player) => player.name === playerData.Player);
+        return matchedPlayer ? sum + +matchedPlayer[field] : sum;
+      }, 0);
+
+      return total + sumForField;
+    }, 0);
+  };
+
+  const calculateFieldGoalPercentage = () => {
+    const fieldGoalsMade = calculateField('fieldGoalMadeCalculated');
+    const fieldGoalAttempts = calculateField('fieldGoalAttempt');
+    const percentage = (fieldGoalsMade / fieldGoalAttempts) * 100;
+    return isNaN(percentage) ? '0.00' : percentage.toFixed(3); // Fixed to three decimal points
+  };
+
+  const calculateFreeThrowPercentage = () => {
+    const freeThrowsMade = calculateField('freeThrowMadeCalculated');
+    const freeThrowAttempts = calculateField('freeThrowAttempt');
+    const percentage = (freeThrowsMade / freeThrowAttempts) * 100;
+    return isNaN(percentage) ? '0.00' : percentage.toFixed(3); // Fixed to three decimal points
+  };
+
+
   return (
     <div style={{ marginLeft: '20px' }}>
       {data && projectionData ? (
@@ -166,6 +206,28 @@ function Home() {
                   </React.Fragment>
                 );
               })}
+
+              {/* TOTAL row */}
+              <tr>
+                <td className="bold centered">TOTAL</td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered">{Number(calculateField('fieldGoalMadeCalculated')).toFixed(3)}</td>
+                <td className="bold centered">{Number(calculateField('fieldGoalAttempt')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateFieldGoalPercentage()/100).toFixed(5)}</td>
+                <td className="bold centered">{Number(calculateField('freeThrowMadeCalculated')).toFixed(3)}</td>
+                <td className="bold centered">{Number(calculateField('freeThrowAttempt')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateFreeThrowPercentage()/100).toFixed(5)}</td>
+                <td className="bold centered">{Number(calculateField('threePointMade')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('points')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('totalRebounds')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('assists')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('steals')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('blocks')).toFixed(1)}</td>
+                <td className="bold centered">{Number(calculateField('turnovers')).toFixed(1)}</td>
+              </tr>
+
             </tbody>
           </table>
         </div>
