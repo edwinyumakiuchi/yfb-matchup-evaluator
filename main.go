@@ -4,24 +4,16 @@ import (
 	"fmt"
 	"strings"
     "net/http"
-    "io/ioutil"
     "encoding/json"
-    "gopkg.in/yaml.v2"
 
 	"yfb-matchup-evaluator/util"
+	"yfb-matchup-evaluator/config"
 
     "github.com/gorilla/pat"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/yahoo"
 )
-
-const CONFIG_FILE_PATH = "./config.yaml"
-
-type Config struct {
-	YahooClientID string `yaml:"yahoo_client_id"`
-	YahooClientSecret string `yaml:"yahoo_client_secret"`
-}
 
 type ProviderIndex struct {
 	Providers    []string
@@ -36,26 +28,10 @@ type GameData struct {
 	} `json:"data"`
 }
 
-// TODO: refactor with mongoUtil
-func readConfig() (*Config, error) {
-	data, err := ioutil.ReadFile(CONFIG_FILE_PATH)
-	if err != nil {
-		return nil, err
-	}
-
-	config := &Config{}
-	err = yaml.Unmarshal(data, config)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
-}
-
 func main() {
 	r := pat.New()
 
-    config, configErr := readConfig()
+    config, configErr := config.ReadConfig()
     if configErr != nil {
         return
     }

@@ -1,12 +1,13 @@
 package util
 
 import (
-	"bytes"
 	"fmt"
+	"bytes"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
-	"gopkg.in/yaml.v2"
+
+	"yfb-matchup-evaluator/config"
 )
 
 const API_APP_ENDPOINT = "https://us-west-2.aws.data.mongodb-api.com/app/data-natmv/"
@@ -15,7 +16,6 @@ const API_ACTION_ENDPOINT = "endpoint/data/v1/action/"
 const API_DELETEMANY_ENDPOINT = "deleteMany"
 const API_INSERTONE_ENDPOINT = "insertOne"
 const API_FIND_ENDPOINT = "find"
-const CONFIG_FILE_PATH = "./config.yaml"
 
 // Define a struct to represent the login response
 type LoginResponse struct {
@@ -23,13 +23,6 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 	UserID       string `json:"user_id"`
 	DeviceID     string `json:"device_id"`
-}
-
-
-type Config struct {
-	MongoKey string `yaml:"mongo_key"`
-	MongoUsername string `yaml:"mongo_username"`
-	MongoPassword string `yaml:"mongo_password"`
 }
 
 type DeleteRequest struct {
@@ -76,24 +69,9 @@ func (p *MongoPlayer) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func readConfig() (*Config, error) {
-	data, err := ioutil.ReadFile(CONFIG_FILE_PATH)
-	if err != nil {
-		return nil, err
-	}
-
-	config := &Config{}
-	err = yaml.Unmarshal(data, config)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
-}
-
 // Define a handler to handle the login API call
 func LoginHandler() (string, error) {
-    config, err := readConfig()
+    config, err := config.ReadConfig()
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +110,7 @@ func LoginHandler() (string, error) {
 }
 
 func DeleteDocuments(dataSource, database, collection string) error {
-    config, err := readConfig()
+    config, err := config.ReadConfig()
 	if err != nil {
 		return err
 	}
@@ -172,7 +150,7 @@ func DeleteDocuments(dataSource, database, collection string) error {
 }
 
 func InsertOneDocument(dataSource, database, collection string, documentJSON string) error {
-    config, err := readConfig()
+    config, err := config.ReadConfig()
 	if err != nil {
 		return err
 	}
