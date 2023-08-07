@@ -17,6 +17,9 @@ const API_DELETEMANY_ENDPOINT = "deleteMany"
 const API_INSERTONE_ENDPOINT = "insertOne"
 const API_FIND_ENDPOINT = "find"
 
+const CONFIG_FILE_PATH = "./config/config.yaml"
+const SECRET_CONFIG_FILE_PATH = "./config/secretConfig.yaml"
+
 // Define a struct to represent the login response
 type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
@@ -71,14 +74,14 @@ func (p *MongoPlayer) UnmarshalJSON(data []byte) error {
 
 // Define a handler to handle the login API call
 func LoginHandler() (string, error) {
-    config, err := config.ReadConfig()
-	if err != nil {
-		return "", err
+    secretConfig, secretConfigErr := config.ReadConfig(SECRET_CONFIG_FILE_PATH)
+	if secretConfigErr != nil {
+		return "", secretConfigErr
 	}
 
 	credentials := map[string]string{
-		"username": config.MongoUsername,
-		"password": config.MongoPassword,
+		"username": secretConfig.MongoUsername,
+		"password": secretConfig.MongoPassword,
 	}
 
 	// Convert the credentials to JSON
@@ -110,9 +113,9 @@ func LoginHandler() (string, error) {
 }
 
 func DeleteDocuments(dataSource, database, collection string) error {
-    config, err := config.ReadConfig()
-	if err != nil {
-		return err
+    secretConfig, secretConfigErr := config.ReadConfig(SECRET_CONFIG_FILE_PATH)
+	if secretConfigErr != nil {
+		return secretConfigErr
 	}
 
 	deleteData := DeleteRequest{
@@ -133,7 +136,7 @@ func DeleteDocuments(dataSource, database, collection string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api-key", config.MongoKey)
+	req.Header.Set("api-key", secretConfig.MongoKey)
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)
@@ -150,12 +153,13 @@ func DeleteDocuments(dataSource, database, collection string) error {
 }
 
 func InsertOneDocument(dataSource, database, collection string, documentJSON string) error {
-    config, err := config.ReadConfig()
-	if err != nil {
-		return err
+    secretConfig, secretConfigErr := config.ReadConfig(SECRET_CONFIG_FILE_PATH)
+	if secretConfigErr != nil {
+		return secretConfigErr
 	}
 
 	var doc map[string]interface{}
+	var err error
 	err = json.Unmarshal([]byte(documentJSON), &doc)
 	if err != nil {
 		return err
@@ -179,7 +183,7 @@ func InsertOneDocument(dataSource, database, collection string, documentJSON str
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api-key", config.MongoKey)
+	req.Header.Set("api-key", secretConfig.MongoKey)
 
 	client := http.DefaultClient
 	resp, err := client.Do(req)

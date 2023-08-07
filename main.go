@@ -15,6 +15,9 @@ import (
 	"github.com/markbates/goth/providers/yahoo"
 )
 
+const CONFIG_FILE_PATH = "./config/config.yaml"
+const SECRET_CONFIG_FILE_PATH = "./config/secretConfig.yaml"
+
 type ProviderIndex struct {
 	Providers    []string
 	ProvidersMap map[string]string
@@ -31,14 +34,20 @@ type GameData struct {
 func main() {
 	r := pat.New()
 
-    config, configErr := config.ReadConfig()
+    secretConfig, secretConfigErr := config.ReadConfig(SECRET_CONFIG_FILE_PATH)
+    if secretConfigErr != nil {
+        return
+    }
+
+    config, configErr := config.ReadConfig(CONFIG_FILE_PATH)
     if configErr != nil {
         return
     }
 
+
     // requires https://github.com/esplo/docker-local-ssl-termination-proxy/tree/master
 	goth.UseProviders(
-		yahoo.New(config.YahooClientID, config.YahooClientSecret, "https://localhost"),
+		yahoo.New(secretConfig.YahooClientID, secretConfig.YahooClientSecret, config.YahooRedirectURI),
 	)
 
 	r.Get("/mongoData", func(res http.ResponseWriter, req *http.Request) {
@@ -52,7 +61,7 @@ func main() {
         if mongoFindErr != nil {
             fmt.Println("Error:", mongoFindErr)
         } else {
-            fmt.Println("Data retrieved successfully!")
+            fmt.Println("Yahoo rosters retrieved successfully!")
         }
 
         var playersData map[string]interface{}
@@ -91,7 +100,7 @@ func main() {
         if mongoFindErr != nil {
             fmt.Println("Error:", mongoFindErr)
         } else {
-            fmt.Println("Data retrieved successfully!")
+            fmt.Println("hashtagbasketball projections retrieved successfully!")
         }
 
         var playersData map[string]interface{}
@@ -178,15 +187,11 @@ func main() {
         mongoDeleteErr := util.DeleteDocuments("Cluster0", "yahoo", "rosters")
         if mongoDeleteErr != nil {
             fmt.Println("Error:", mongoDeleteErr)
-        } else {
-            fmt.Println("Data deleted successfully!")
         }
 
         mongoInsertErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(jsonBytes))
         if mongoInsertErr != nil {
             fmt.Println("Error:", mongoInsertErr)
-        } else {
-            fmt.Println("Data inserted successfully!")
         }
 
         http.Redirect(res, req, "http://localhost:3000/?loggedIn=true", http.StatusFound)
