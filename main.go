@@ -93,15 +93,15 @@ func main() {
             return
         }
 
-        // Call the function in yahooUtil.go to fetch the API data.
-        apiBody, apiErr := util.GetAPIData(user.AccessToken)
-        if apiErr != nil {
-            fmt.Println(apiErr)
+        // Call the function in yahooUtil.go to fetch the API data from Yahoo
+        yahooRoster, yahooErr := util.RetrieveYahooRoster(user.AccessToken)
+        if yahooErr != nil {
+            fmt.Println(yahooErr)
             return
         }
 
         // Parse the API data and get the desired JSON
-        jsonBytes, jsonErr := util.ParseData(apiBody)
+        yahooJSONRoster, jsonErr := util.ParseData(yahooRoster)
         if jsonErr != nil {
             fmt.Println(jsonErr)
             return
@@ -112,7 +112,7 @@ func main() {
             fmt.Println("Error:", mongoDeleteErr)
         }
 
-        mongoInsertErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(jsonBytes))
+        mongoInsertErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(yahooJSONRoster))
         if mongoInsertErr != nil {
             fmt.Println("Error:", mongoInsertErr)
         }

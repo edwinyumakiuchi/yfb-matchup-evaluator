@@ -6,6 +6,8 @@ import (
     "net/http"
 	"encoding/json"
 	"encoding/xml"
+
+	"yfb-matchup-evaluator/config"
 )
 
 type FantasyContent struct {
@@ -31,31 +33,36 @@ type Player struct {
     Position string   `xml:"display_position"`
 }
 
-func GetAPIData(accessToken string) ([]byte, error) {
-    apiURL := "https://fantasysports.yahooapis.com/fantasy/v2/team/418.l.33024.t.4/roster"
-    apiReq, apiErr := http.NewRequest("GET", apiURL, nil)
-    if apiErr != nil {
-        return nil, fmt.Errorf("Error creating request: %v", apiErr)
+func RetrieveYahooRoster(accessToken string) ([]byte, error) {
+    config, configErr := config.ReadConfig(CONFIG_FILE_PATH)
+    if configErr != nil {
+        return nil, configErr
     }
-    apiReq.Header.Set("Authorization", "Bearer "+accessToken)
+
+    yahooAPIURL := config.YahooTeamURL + "/" + config.YahooYearID + ".l." + config.YahooLeagueID + ".t." + config.YahooTeamID + "/roster"
+    yahooAPIReq, yahooAPIErr := http.NewRequest("GET", yahooAPIURL, nil)
+    if yahooAPIErr != nil {
+        return nil, fmt.Errorf("Error creating request: %v", yahooAPIErr)
+    }
+    yahooAPIReq.Header.Set("Authorization", "Bearer " + accessToken)
 
     client := &http.Client{}
-    apiResp, apiErr := client.Do(apiReq)
-    if apiErr != nil {
-        return nil, fmt.Errorf("Error making request: %v", apiErr)
+    yahooAPIResp, yahooAPIErr := client.Do(yahooAPIReq)
+    if yahooAPIErr != nil {
+        return nil, fmt.Errorf("Error making request: %v", yahooAPIErr)
     }
-    defer apiResp.Body.Close()
+    defer yahooAPIResp.Body.Close()
 
-    if apiResp.StatusCode != http.StatusOK {
-        return nil, fmt.Errorf("API responded with status code %d", apiResp.StatusCode)
-    }
-
-    apiBody, apiErr := io.ReadAll(apiResp.Body)
-    if apiErr != nil {
-        return nil, fmt.Errorf("Error reading response body: %v", apiErr)
+    if yahooAPIResp.StatusCode != http.StatusOK {
+        return nil, fmt.Errorf("API responded with status code %d", yahooAPIResp.StatusCode)
     }
 
-    return apiBody, nil
+    yahooAPIBody, yahooAPIErr := io.ReadAll(yahooAPIResp.Body)
+    if yahooAPIErr != nil {
+        return nil, fmt.Errorf("Error reading response body: %v", yahooAPIErr)
+    }
+
+    return yahooAPIBody, nil
 }
 
 func ParseData(apiBody []byte) ([]byte, error) {

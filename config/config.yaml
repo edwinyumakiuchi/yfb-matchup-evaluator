@@ -1,1 +1,22 @@
 yahoo_redirect_uri: "https://localhost"
+yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
+
+# Sarcus Mmart
+yahoo_year_id: "418"
+yahoo_league_id: "33024"
+yahoo_team_id: "4"
+
+# Sascal Piakam
+# yahoo_year_id: "418"
+# yahoo_league_id: "117259"
+# yahoo_team_id: "1"
+
+# IL. Ball
+# yahoo_year_id: "418"
+# yahoo_league_id: "117259"
+# yahoo_team_id: "2"
+
+# Aam Bdebayo
+# yahoo_year_id: "410"
+# yahoo_league_id: "129496"
+# yahoo_team_id: "1"
