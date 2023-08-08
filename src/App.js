@@ -36,7 +36,7 @@ function Home() {
   const [gameData, setGameData] = useState(null);
 
   useEffect(() => {
-    fetch('/mongoData')
+    fetch('/yahooRosters')
       .then((response) => response.json())
       .then((data) => {
         setData(data);
@@ -47,7 +47,7 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    fetch('/mongoProjectionData')
+    fetch('/hbProjections')
       .then((response) => response.json())
       .then((data) => {
         setProjectionData(data);

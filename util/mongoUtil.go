@@ -238,3 +238,39 @@ func GetPlayers(database string, collection string, accessToken string) (string,
 
     return string(responseBody), nil
 }
+
+func RetrieveMongoData(database string, collection string) ([]byte, error) {
+    mongoAccessToken, loginErr := LoginHandler()
+    if loginErr != nil {
+        fmt.Println("Error retrieving Mongo access token:", loginErr)
+        return nil, loginErr
+    }
+
+    players, mongoFindErr := GetPlayers(database, collection, mongoAccessToken)
+    if mongoFindErr != nil {
+        fmt.Println("Error:", mongoFindErr)
+        return nil, mongoFindErr
+    }
+
+    var data map[string]interface{}
+
+    jsonErr := json.Unmarshal([]byte(players), &data)
+    if jsonErr != nil {
+        fmt.Println("Error parsing data:", jsonErr)
+        return nil, jsonErr
+    }
+
+    // Access the "documents" array
+    documents, ok := data["documents"].([]interface{})
+    if !ok {
+        return nil, fmt.Errorf("Error parsing documents data")
+    }
+
+    encodedData, encodingErr := json.Marshal(documents)
+    if encodingErr != nil {
+        fmt.Println("Error encoding response data:", encodingErr)
+        return nil, encodingErr
+    }
+
+    return encodedData, nil
+}

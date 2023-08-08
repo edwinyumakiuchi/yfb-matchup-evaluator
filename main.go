@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
     "net/http"
-    "encoding/json"
 
 	"yfb-matchup-evaluator/util"
 	"yfb-matchup-evaluator/config"
@@ -44,88 +43,35 @@ func main() {
         return
     }
 
-
     // requires https://github.com/esplo/docker-local-ssl-termination-proxy/tree/master
 	goth.UseProviders(
 		yahoo.New(secretConfig.YahooClientID, secretConfig.YahooClientSecret, config.YahooRedirectURI),
 	)
 
-	r.Get("/mongoData", func(res http.ResponseWriter, req *http.Request) {
-        accessToken, err := util.LoginHandler()
+	r.Get("/yahooRosters", func(res http.ResponseWriter, req *http.Request) {
+	    yahooRosters, err := util.RetrieveMongoData("yahoo", "rosters")
         if err != nil {
-            fmt.Println("Error getting access token:", err)
+            fmt.Println("Error retrieving yahoo rosters:", err)
             return
         }
 
-        players, mongoFindErr := util.GetPlayers("yahoo", "rosters", accessToken)
-        if mongoFindErr != nil {
-            fmt.Println("Error:", mongoFindErr)
-        } else {
-            fmt.Println("Yahoo rosters retrieved successfully!")
-        }
-
-        var playersData map[string]interface{}
-
-        playerJsonErr := json.Unmarshal([]byte(players), &playersData)
-        if playerJsonErr != nil {
-            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
-            return
-        }
-
-        // Access the "documents" array from playersData
-        documents, ok := playersData["documents"].([]interface{})
-        if !ok {
-            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
-            return
-        }
-
-        responseJSON, responseErr := json.Marshal(documents)
-        if responseErr != nil {
-            http.Error(res, "Error encoding response data", http.StatusInternalServerError)
-            return
-        }
+        fmt.Println("Yahoo rosters retrieved successfully!")
 
         res.Header().Set("Content-Type", "application/json")
-        res.Write(responseJSON)
+        res.Write(yahooRosters)
 	})
 
-	r.Get("/mongoProjectionData", func(res http.ResponseWriter, req *http.Request) {
-        accessToken, err := util.LoginHandler()
+	r.Get("/hbProjections", func(res http.ResponseWriter, req *http.Request) {
+	    hbProjections, err := util.RetrieveMongoData("sample-nba", "projections")
         if err != nil {
-            fmt.Println("Error getting access token:", err)
+            fmt.Println("Error retrieving hashtagbasketball projections:", err)
             return
         }
 
-        players, mongoFindErr := util.GetPlayers("sample-nba", "projections", accessToken)
-        if mongoFindErr != nil {
-            fmt.Println("Error:", mongoFindErr)
-        } else {
-            fmt.Println("hashtagbasketball projections retrieved successfully!")
-        }
-
-        var playersData map[string]interface{}
-
-        playerJsonErr := json.Unmarshal([]byte(players), &playersData)
-        if playerJsonErr != nil {
-            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
-            return
-        }
-
-        // Access the "documents" array from playersData
-        documents, ok := playersData["documents"].([]interface{})
-        if !ok {
-            http.Error(res, "Error parsing players data", http.StatusInternalServerError)
-            return
-        }
-
-        jsonData, err := json.Marshal(documents)
-        if err != nil {
-            http.Error(res, "Error converting data to JSON", http.StatusInternalServerError)
-            return
-        }
+        fmt.Println("hashtagbasketball projections retrieved successfully!")
 
         res.Header().Set("Content-Type", "application/json")
-        res.Write(jsonData)
+        res.Write(hbProjections)
 	})
 
 	r.Get("/schedule", func(res http.ResponseWriter, req *http.Request) {
