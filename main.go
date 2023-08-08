@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
     "net/http"
+    "io/ioutil"
 
 	"yfb-matchup-evaluator/util"
 	"yfb-matchup-evaluator/config"
@@ -74,40 +75,16 @@ func main() {
         res.Write(hbProjections)
 	})
 
-	r.Get("/schedule", func(res http.ResponseWriter, req *http.Request) {
-        gameData := `
-        {
-            "data": [
-                {
-                    "date": "10/17/2023",
-                    "teams": ["LAL", "DEN", "BOS", "MIA"]
-                },
-                {
-                    "date": "10/18/2023",
-                    "teams": ["HOU", "NOP", "SAS", "TOR", "PHX", "PHI", "UTA", "ORL", "ATL", "WAS", "NYK", "CHI", "OKL", "BKN", "MEM", "MIN", "DET", "DAL", "SAC", "POR", "CHA", "CLE", "GSW", "MIL"]
-                },
-                {
-                    "date": "10/19/2023",
-                    "teams": ["LAL", "MIA", "LAC", "IND"]
-                },
-                {
-                    "date": "10/20/2023",
-                    "teams": ["ORL", "PHI", "TOR", "NOP", "WAS", "GSW", "NYK", "DEN", "MEM", "SAS", "HOU", "BOS", "UTA", "CHA", "DET", "ATL", "POR", "BKN", "MIN", "CHI"]
-                },
-                {
-                    "date": "10/21/2023",
-                    "teams": ["ORL", "CLE", "CHI", "MEM", "OKL", "IND", "MIL", "DET", "SAC", "DAL", "TOR", "HOU", "DEN", "BOS", "SAS", "LAC", "PHI", "MIA"]
-                },
-                {
-                    "date": "10/22/2023",
-                    "teams": ["CHA", "ATL", "WAS", "SAC", "PHX", "POR", "OKL", "UTA", "MIN", "LAC", "LAL", "GSW", "NOP", "CLE"]
-                }
-            ]
-        }`
+    r.Get("/schedule", func(res http.ResponseWriter, req *http.Request) {
+        gameDataFile, err := ioutil.ReadFile("sample_data.json")
+        if err != nil {
+            http.Error(res, "Error reading data", http.StatusInternalServerError)
+            return
+        }
 
         res.Header().Set("Content-Type", "application/json")
-        res.Write([]byte(gameData))
-	})
+        res.Write(gameDataFile)
+    })
 
     r.Get("/auth/{provider}/callback", func(res http.ResponseWriter, req *http.Request) {
         user, err := gothic.CompleteUserAuth(res, req)
