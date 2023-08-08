@@ -76,16 +76,8 @@ function Home() {
         .flatMap((player) => player.Roster)
         .filter((playerData) => game.teams.includes(playerData.Team));
 
-      const updatedProjectionData = projectionData.map((player) => {
-        if (player.name === "PJ Washington") {
-          return { ...player, name: "P.J. Washington" };
-        } else {
-          return player;
-        }
-      });
-
       const sumForField = playersForDate.reduce((sum, playerData) => {
-        const matchedPlayer = updatedProjectionData.find((player) => player.name === playerData.Player);
+        const matchedPlayer = projectionData.find((player) => player.name === playerData.Player);
         return matchedPlayer ? sum + +matchedPlayer[field] : sum;
       }, 0);
 
@@ -149,17 +141,8 @@ function Home() {
                     </tr>
 
                     {playersForDate.map((playerData, index) => {
-                      // Update the player names in projectionData before searching for the matched player
-                      const updatedProjectionData = projectionData.map((player) => {
-                        if (player.name === "PJ Washington") {
-                          return { ...player, name: "P.J. Washington" };
-                        } else {
-                          return player;
-                        }
-                      });
-
                       // Find the player from updatedProjectionData that matches the current "Player" in playerData
-                      const matchedPlayer = updatedProjectionData.find((player) => player.name === playerData.Player);
+                      const matchedPlayer = projectionData.find((player) => player.name === playerData.Player);
 
                       return (
                         <tr key={index}>
