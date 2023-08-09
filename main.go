@@ -93,29 +93,7 @@ func main() {
             return
         }
 
-        // Call the function in yahooUtil.go to fetch the API data from Yahoo
-        yahooRoster, yahooErr := util.RetrieveYahooRoster(user.AccessToken)
-        if yahooErr != nil {
-            fmt.Println(yahooErr)
-            return
-        }
-
-        // Parse the API data and get the desired JSON
-        yahooJSONRoster, jsonErr := util.ParseData(yahooRoster)
-        if jsonErr != nil {
-            fmt.Println(jsonErr)
-            return
-        }
-
-        mongoDeleteErr := util.DeleteDocuments("Cluster0", "yahoo", "rosters")
-        if mongoDeleteErr != nil {
-            fmt.Println("Error:", mongoDeleteErr)
-        }
-
-        mongoInsertErr := util.InsertOneDocument("Cluster0", "yahoo", "rosters", string(yahooJSONRoster))
-        if mongoInsertErr != nil {
-            fmt.Println("Error:", mongoInsertErr)
-        }
+        util.YahooToMongo("yahoo", "rosters", user.AccessToken)
 
         http.Redirect(res, req, "http://localhost:3000/?loggedIn=true", http.StatusFound)
     })
