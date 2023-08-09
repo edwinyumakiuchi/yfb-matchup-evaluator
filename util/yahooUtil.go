@@ -76,8 +76,8 @@ func ParseData(apiBody []byte) ([]byte, error) {
     playersWithTeam := make([]map[string]string, len(fc.Team.Roster.Players))
     for i, player := range fc.Team.Roster.Players {
         playerData := map[string]string{
-            "Player": player.Name,
-            "Team":   player.TeamAbbr,
+            "Player":     player.Name,
+            "Team":       player.TeamAbbr,
             "Position":   player.Position,
         }
         playersWithTeam[i] = playerData

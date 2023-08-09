@@ -89,14 +89,14 @@ function Home() {
     const fieldGoalsMade = calculateField('fieldGoalMadeCalculated');
     const fieldGoalAttempts = calculateField('fieldGoalAttempt');
     const percentage = (fieldGoalsMade / fieldGoalAttempts) * 100;
-    return isNaN(percentage) ? '0.00' : percentage.toFixed(3); // Fixed to three decimal points
+    return isNaN(percentage) ? '0.00' : percentage.toFixed(3);
   };
 
   const calculateFreeThrowPercentage = () => {
     const freeThrowsMade = calculateField('freeThrowMadeCalculated');
     const freeThrowAttempts = calculateField('freeThrowAttempt');
     const percentage = (freeThrowsMade / freeThrowAttempts) * 100;
-    return isNaN(percentage) ? '0.00' : percentage.toFixed(3); // Fixed to three decimal points
+    return isNaN(percentage) ? '0.00' : percentage.toFixed(3);
   };
 
 
@@ -141,7 +141,6 @@ function Home() {
                     </tr>
 
                     {playersForDate.map((playerData, index) => {
-                      // Find the player from updatedProjectionData that matches the current "Player" in playerData
                       const matchedPlayer = projectionData.find((player) => player.name === playerData.Player);
 
                       return (
@@ -166,7 +165,7 @@ function Home() {
                               <td className="bold centered">{matchedPlayer.turnovers}</td>
                             </>
                           ) : (
-                            // Render empty cells when matchedPlayer is not found
+                            // Render cells with 0 when matchedPlayer is not found
                             <>
                               <td className="bold centered">0</td>
                               <td className="bold centered">0</td>

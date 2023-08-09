@@ -32,7 +32,7 @@ type DeleteRequest struct {
 	DataSource string               `json:"dataSource"`
 	Database   string               `json:"database"`
 	Collection string               `json:"collection"`
-	Filter   map[string]interface{} `json:"filter"`
+	Filter     map[string]interface{} `json:"filter"`
 }
 
 type InsertRequest struct {
@@ -260,7 +260,6 @@ func RetrieveMongoData(database string, collection string) ([]byte, error) {
         return nil, jsonErr
     }
 
-    // Access the "documents" array
     documents, ok := data["documents"].([]interface{})
     if !ok {
         return nil, fmt.Errorf("Error parsing documents data")
