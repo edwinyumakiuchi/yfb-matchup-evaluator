@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "date": "10/17/2023",
+      "teams": ["BOS", "DEN", "LAL", "MIA"]
+    },
+    {
+      "date": "10/18/2023",
+      "teams": ["ATL", "BKN", "CHA", "CHI", "CLE", "DAL", "DET", "GSW", "HOU", "MEM", "MIL", "MIN", "NOP", "NYK", "OKL", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"]
+    },
+    {
+      "date": "10/19/2023",
+      "teams": ["IND", "LAC", "LAL", "MIA"]
+    },
+    {
+      "date": "10/20/2023",
+      "teams": ["ATL", "BKN", "BOS", "CHA", "CHI", "DEN", "DET", "GSW", "HOU", "MEM", "MIN", "NOP", "NYK", "ORL", "PHI", "POR", "SAS", "TOR", "UTA", "WAS"]
+    },
+    {
+      "date": "10/21/2023",
+      "teams": ["BOS", "CHI", "CLE", "DAL", "DEN", "DET", "HOU", "IND", "LAC", "MEM", "MIA", "MIL", "OKL", "ORL", "PHI", "SAC", "SAS", "TOR"]
+    },
+    {
+      "date": "10/22/2023",
+      "teams": ["ATL", "CHA", "CLE", "GSW", "LAC", "LAL", "MIN", "NOP", "OKL", "PHX", "POR", "SAC", "UTA", "WAS"]
+    }
+  ]
+}
