@@ -69,7 +69,7 @@ func main() {
             return
         }
 
-        fmt.Println("hashtagbasketball projections retrieved successfully!")
+        fmt.Println("Hashtagbasketball projections retrieved successfully!")
 
         res.Header().Set("Content-Type", "application/json")
         res.Write(hbProjections)
@@ -85,6 +85,19 @@ func main() {
         res.Header().Set("Content-Type", "application/json")
         res.Write(gameDataFile)
     })
+
+	r.Get("/yahooMatchup", func(res http.ResponseWriter, req *http.Request) {
+	    yahooRosters, err := util.RetrieveMongoData("yahoo", "matchup")
+        if err != nil {
+            fmt.Println("Error retrieving yahoo matchup:", err)
+            return
+        }
+
+        fmt.Println("Yahoo matchup retrieved successfully!")
+
+        res.Header().Set("Content-Type", "application/json")
+        res.Write(yahooRosters)
+	})
 
     r.Get("/auth/{provider}/callback", func(res http.ResponseWriter, req *http.Request) {
         user, err := gothic.CompleteUserAuth(res, req)

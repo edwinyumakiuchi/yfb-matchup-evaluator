@@ -34,6 +34,7 @@ function Home() {
   const [data, setData] = useState(null);
   const [projectionData, setProjectionData] = useState(null);
   const [gameData, setGameData] = useState(null);
+  const [matchupData, setMatchupData] = useState(null);
 
   useEffect(() => {
     fetch('/yahooRosters')
@@ -62,6 +63,17 @@ function Home() {
       .then((response) => response.json())
       .then((data) => {
         setGameData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('/yahooMatchup')
+      .then((response) => response.json())
+      .then((data) => {
+        setMatchupData(data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -99,8 +111,22 @@ function Home() {
     return isNaN(percentage) ? '0.00' : percentage.toFixed(3);
   };
 
+  const statIdToLabel = {
+    "9004003": "FGM/FGA",
+    "5": "FG",
+    "9007006": "FTM/FTA",
+    "8": "FT",
+    "10": "3PM",
+    "12": "PTS",
+    "15": "REB",
+    "16": "AST",
+    "17": "ST",
+    "18": "BLK",
+    "19": "TO"
+  };
 
   return (
+    <>
     <div style={{ marginLeft: '20px' }}>
       {data && projectionData ? (
         <div>
@@ -219,6 +245,38 @@ function Home() {
         </>
       )}
     </div>
+
+    <div style={{ marginLeft: '20px' }}>
+      {matchupData ? (
+        <div>
+          <h2>Matchup Data</h2>
+          <table className="bordered-table">
+            <thead className="header-row">
+              <tr>
+                <th className="bold centered">Team</th>
+                {matchupData[0]?.Matchup[0]?.Stats.map((stat, index) => (
+                  <th className="bold centered" key={index}>{statIdToLabel[stat.StatID]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+                {matchupData[0]?.Matchup.map((matchup, index) => (
+                  <tr key={index}>
+                    <td className="bold centered">{matchup.MatchupTeam}</td>
+                    {matchup.Stats.map((stat, statIndex) => {
+                      const statValue = stat.StatValue;
+                      return (
+                        <td className="bold centered" key={statIndex}>{statValue}</td>
+                      );
+                    })}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </div>
+    </>
   );
 }
 
