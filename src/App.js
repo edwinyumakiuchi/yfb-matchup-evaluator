@@ -31,6 +31,7 @@ function LogIn() {
 }
 
 function Home() {
+  const selfTeamName = 'Sascal Piakam'
   const [data, setData] = useState(null);
   const [projectionData, setProjectionData] = useState(null);
   const [gameData, setGameData] = useState(null);
@@ -332,16 +333,16 @@ function Home() {
                 };
 
                 matchupData[0]?.Matchup.forEach((team) => {
-                  if (team.MatchupTeam !== 'Sascal Piakam') {
-                    const selfFg = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[0]?.StatValue;
-                    const selfFt = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[2]?.StatValue;
-                    const selfTpm = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[4]?.StatValue;
-                    const selfPts = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[5]?.StatValue;
-                    const selfReb = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[6]?.StatValue;
-                    const selfAst = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[7]?.StatValue;
-                    const selfStl = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[8]?.StatValue;
-                    const selfBlk = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[9]?.StatValue;
-                    const selfTo = matchupData[0]?.Matchup.find(t => t.MatchupTeam === 'Sascal Piakam')?.Stats[10]?.StatValue;
+                  if (team.MatchupTeam !== selfTeamName) {
+                    const selfFg = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[0]?.StatValue;
+                    const selfFt = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[2]?.StatValue;
+                    const selfTpm = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[4]?.StatValue;
+                    const selfPts = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[5]?.StatValue;
+                    const selfReb = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[6]?.StatValue;
+                    const selfAst = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[7]?.StatValue;
+                    const selfStl = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[8]?.StatValue;
+                    const selfBlk = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[9]?.StatValue;
+                    const selfTo = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[10]?.StatValue;
 
                     calculateRatioAndUpdateRecords(team, selfFg, 0); // FGM/FGA
                     calculateRatioAndUpdateRecords(team, selfFt, 2); // FTM/FTA
@@ -364,7 +365,7 @@ function Home() {
                       <td className="bold centered" key={statIndex}>{stat.StatValue}</td>
                     ))}
                     <td className="bold centered">
-                      {matchup.MatchupTeam === 'Sascal Piakam' ? (
+                      {matchup.MatchupTeam === selfTeamName ? (
                         ''
                       ) : (
                         `${teamStats[matchup.MatchupTeam].winNumber}-${teamStats[matchup.MatchupTeam].lossNumber}-${teamStats[matchup.MatchupTeam].tieNumber}`
