@@ -11,6 +11,7 @@ type Config struct {
 
     YahooRedirectURI string `yaml:"yahoo_redirect_uri"`
     YahooTeamURL string `yaml:"yahoo_team_url"`
+    YahooLeagueURL string `yaml:"yahoo_league_url"`
     YahooYearID string `yaml:"yahoo_year_id"`
     YahooLeagueID string `yaml:"yahoo_league_id"`
     YahooTeamID string `yaml:"yahoo_team_id"`

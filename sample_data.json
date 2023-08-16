@@ -2,15 +2,15 @@
   "data": [
     {
       "date": "10/17/2023",
-      "teams": ["BOS", "DEN", "LAL", "MIA"]
+      "teams": ["DEN", "GSW", "LAL", "PHX"]
     },
     {
       "date": "10/18/2023",
-      "teams": ["ATL", "BKN", "CHA", "CHI", "CLE", "DAL", "DET", "GSW", "HOU", "MEM", "MIL", "MIN", "NOP", "NYK", "OKL", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"]
+      "teams": ["ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DET", "HOU", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK", "OKL", "ORL", "PHI", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"]
     },
     {
       "date": "10/19/2023",
-      "teams": ["IND", "LAC", "LAL", "MIA"]
+      "teams": ["IND", "LAC", "LAL", "PHX"]
     },
     {
       "date": "10/20/2023",
@@ -18,11 +18,11 @@
     },
     {
       "date": "10/21/2023",
-      "teams": ["BOS", "CHI", "CLE", "DAL", "DEN", "DET", "HOU", "IND", "LAC", "MEM", "MIA", "MIL", "OKL", "ORL", "PHI", "SAC", "SAS", "TOR"]
+      "teams": ["CHI", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", "LAC", "MEM", "MIL", "OKL", "ORL", "PHI", "PHX", "SAC", "SAS", "TOR"]
     },
     {
       "date": "10/22/2023",
-      "teams": ["ATL", "CHA", "CLE", "GSW", "LAC", "LAL", "MIN", "NOP", "OKL", "PHX", "POR", "SAC", "UTA", "WAS"]
+      "teams": ["ATL", "BOS", "CHA", "CLE", "LAC", "LAL", "MIN", "NOP", "OKL", "PHX", "POR", "SAC", "UTA", "WAS"]
     }
   ]
 }

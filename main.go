@@ -94,6 +94,7 @@ func main() {
         }
 
         util.YahooToMongo("yahoo", "rosters", user.AccessToken)
+        util.YahooToMongo("yahoo", "matchup", user.AccessToken)
 
         http.Redirect(res, req, "http://localhost:3000/?loggedIn=true", http.StatusFound)
     })

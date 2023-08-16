@@ -1,5 +1,6 @@
 yahoo_redirect_uri: "https://localhost"
 yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
+yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 
 # Sarcus Mmart
 yahoo_year_id: "418"
