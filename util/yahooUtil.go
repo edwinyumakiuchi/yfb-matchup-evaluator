@@ -2,8 +2,6 @@ package util
 
 import (
     "fmt"
-    "io"
-    "net/http"
 	"encoding/json"
 	"encoding/xml"
 
@@ -40,34 +38,13 @@ func RetrieveYahooRoster(accessToken string) ([]byte, error) {
     }
 
     yahooAPIURL := config.YahooTeamURL + "/" + config.YahooYearID + ".l." + config.YahooLeagueID + ".t." + config.YahooTeamID + "/roster"
-    yahooAPIReq, yahooAPIErr := http.NewRequest("GET", yahooAPIURL, nil)
+    yahooAPIBody, yahooAPIErr := GetAPI(yahooAPIURL, accessToken)
     if yahooAPIErr != nil {
-        return nil, fmt.Errorf("Error creating request: %v", yahooAPIErr)
-    }
-    yahooAPIReq.Header.Set("Authorization", "Bearer " + accessToken)
-
-    client := &http.Client{}
-    yahooAPIResp, yahooAPIErr := client.Do(yahooAPIReq)
-    if yahooAPIErr != nil {
-        return nil, fmt.Errorf("Error making request: %v", yahooAPIErr)
-    }
-    defer yahooAPIResp.Body.Close()
-
-    if yahooAPIResp.StatusCode != http.StatusOK {
-        return nil, fmt.Errorf("API responded with status code %d", yahooAPIResp.StatusCode)
+        return nil, fmt.Errorf("Error requesting GET API: %v", yahooAPIErr)
     }
 
-    yahooAPIBody, yahooAPIErr := io.ReadAll(yahooAPIResp.Body)
-    if yahooAPIErr != nil {
-        return nil, fmt.Errorf("Error reading response body: %v", yahooAPIErr)
-    }
-
-    return yahooAPIBody, nil
-}
-
-func ParseData(apiBody []byte) ([]byte, error) {
     var fc FantasyContent
-    xmlErr := xml.Unmarshal(apiBody, &fc)
+    xmlErr := xml.Unmarshal(yahooAPIBody, &fc)
     if xmlErr != nil {
         return nil, fmt.Errorf("Error while parsing XML: %v", xmlErr)
     }
