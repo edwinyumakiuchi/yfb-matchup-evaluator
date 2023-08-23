@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
     "net/http"
-    "io/ioutil"
 
 	"yfb-matchup-evaluator/util"
 	"yfb-matchup-evaluator/config"
@@ -76,14 +75,16 @@ func main() {
 	})
 
     r.Get("/schedule", func(res http.ResponseWriter, req *http.Request) {
-        gameDataFile, err := ioutil.ReadFile("sample_data.json")
+	    hbSchedule, err := util.RetrieveMongoData("sample-nba", "advanced-nba-schedule-grid")
         if err != nil {
-            http.Error(res, "Error reading data", http.StatusInternalServerError)
+            fmt.Println("Error retrieving hashtagbasketball advanced-nba-schedule-grid:", err)
             return
         }
 
+        fmt.Println("Hashtagbasketball advanced-nba-schedule-grid retrieved successfully!")
+
         res.Header().Set("Content-Type", "application/json")
-        res.Write(gameDataFile)
+        res.Write(hbSchedule)
     })
 
 	r.Get("/yahooMatchup", func(res http.ResponseWriter, req *http.Request) {
