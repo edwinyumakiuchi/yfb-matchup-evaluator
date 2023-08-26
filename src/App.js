@@ -63,7 +63,7 @@ function Home() {
     fetch('/schedule')
       .then((response) => response.json())
       .then((data) => {
-        setGameData(data);
+        setGameData(data[0]);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
