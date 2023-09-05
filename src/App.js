@@ -31,8 +31,8 @@ function LogIn() {
 }
 
 function Home() {
-  const selfTeamName = 'Sascal Piakam'
   const [data, setData] = useState(null);
+  const [selfTeamName, setSelfTeamName] = useState(null);
   const [projectionData, setProjectionData] = useState(null);
   const [gameData, setGameData] = useState(null);
   const [matchupData, setMatchupData] = useState(null);
@@ -42,6 +42,7 @@ function Home() {
       .then((response) => response.json())
       .then((data) => {
         setData(data);
+        setSelfTeamName(data[0]["Fantasy Team"]);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -248,7 +249,7 @@ function Home() {
     </div>
 
     <div style={{ marginLeft: '20px' }}>
-      {matchupData ? (
+      {matchupData && selfTeamName ? (
         <div>
           <h2>Matchup Data</h2>
           <table className="bordered-table">
