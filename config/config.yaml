@@ -28,7 +28,6 @@ yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 # yahoo_team_id: "5"
 
 # Sascal Piakam
-yahoo_team_name: "Sascal Piakam"
 yahoo_year_id: "418"
 yahoo_league_id: "117259"
 yahoo_team_id: "1"
