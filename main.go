@@ -56,6 +56,7 @@ func main() {
         }
 
         fmt.Println("Yahoo rosters retrieved successfully!")
+        // fmt.Println("yahooRosters:", string(yahooRosters))
 
         res.Header().Set("Content-Type", "application/json")
         res.Write(yahooRosters)
