@@ -428,29 +428,87 @@ function Home() {
                 }, 0);
                 const fieldGoalMadeAverage = fieldGoalMadeSum / teamPlayers.length;
 
+                const fieldGoalAttemptSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalAttempt) : sum;
+                }, 0);
+                const fieldGoalAttemptAverage = fieldGoalAttemptSum / teamPlayers.length;
+
+                const fieldGoal = fieldGoalMadeAverage / fieldGoalAttemptAverage
+
+                const freeThrowMadeSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowMadeCalculated) : sum;
+                }, 0);
+                const freeThrowMadeAverage = freeThrowMadeSum / teamPlayers.length;
+
+                const freeThrowAttemptSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowAttempt) : sum;
+                }, 0);
+                const freeThrowAttemptAverage = freeThrowAttemptSum / teamPlayers.length;
+
+                const freeThrow = freeThrowMadeAverage / freeThrowAttemptAverage
+
+                const threePointMadeSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
+                }, 0);
+                const threePointMadeAverage = threePointMadeSum / teamPlayers.length;
+
+                const pointsSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.points) : sum;
+                }, 0);
+                const pointsAverage = pointsSum / teamPlayers.length;
+
+                const totalReboundsSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.totalRebounds) : sum;
+                }, 0);
+                const totalReboundsAverage = totalReboundsSum / teamPlayers.length;
+
                 const assistsSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.assists) : sum;
                 }, 0);
                 const assistsAverage = assistsSum / teamPlayers.length;
 
+                const stealsSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.steals) : sum;
+                }, 0);
+                const stealsAverage = stealsSum / teamPlayers.length;
+
+                const blocksSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.blocks) : sum;
+                }, 0);
+                const blocksAverage = blocksSum / teamPlayers.length;
+
+                const turnoversSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.turnovers) : sum;
+                }, 0);
+                const turnoversAverage = turnoversSum / teamPlayers.length;
+
                 return (
                   <React.Fragment key={teamIndex}>
                     <tr>
                       <td className="bold centered">{teamName}</td>
                       <td className="bold centered">{fieldGoalMadeAverage.toFixed(3)}</td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
+                      <td className="bold centered">{fieldGoalAttemptAverage.toFixed(3)}</td>
+                      <td className="bold centered">{fieldGoal.toFixed(3)}</td>
+                      <td className="bold centered">{freeThrowMadeAverage.toFixed(3)}</td>
+                      <td className="bold centered">{freeThrowAttemptAverage.toFixed(3)}</td>
+                      <td className="bold centered">{freeThrow.toFixed(3)}</td>
+                      <td className="bold centered">{threePointMadeAverage.toFixed(3)}</td>
+                      <td className="bold centered">{pointsAverage.toFixed(3)}</td>
+                      <td className="bold centered">{totalReboundsAverage.toFixed(3)}</td>
                       <td className="bold centered">{assistsAverage.toFixed(3)}</td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
-                      <td className="bold centered"></td>
+                      <td className="bold centered">{stealsAverage.toFixed(3)}</td>
+                      <td className="bold centered">{blocksAverage.toFixed(3)}</td>
+                      <td className="bold centered">{turnoversAverage.toFixed(3)}</td>
                     </tr>
                   </React.Fragment>
                 );
