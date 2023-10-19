@@ -394,138 +394,76 @@ function Home() {
 
 
 
-    {/* <div style={{ marginLeft: '20px' }}>
-      {matchupData && selfTeamName ? (
+    <div style={{ marginLeft: '20px' }}>
+      {data && projectionData ? (
         <div>
-          <h2>Seasn Outlook vs Teams</h2>
+          <h2>Season Outlook</h2>
           <table className="bordered-table">
             <thead className="header-row">
               <tr>
-                <th className="bold centered">Team</th>
-                {matchupData[0]?.Matchup[0]?.Stats.map((stat, index) => (
-                  <th className="bold centered" key={index}>{statIdToLabel[stat.StatID]}</th>
-                ))}
-                <th className="bold centered">Score</th>
+                <th className="bold centered">FANTASY TEAM</th>
+                <th className="bold centered">FGM</th>
+                <th className="bold centered">FGA</th>
+                <th className="bold centered">FG%</th>
+                <th className="bold centered">FTM</th>
+                <th className="bold centered">FTA</th>
+                <th className="bold centered">FT%</th>
+                <th className="bold centered">3PTM</th>
+                <th className="bold centered">PTS</th>
+                <th className="bold centered">REB</th>
+                <th className="bold centered">AST</th>
+                <th className="bold centered">ST</th>
+                <th className="bold centered">BLK</th>
+                <th className="bold centered">TO</th>
               </tr>
             </thead>
             <tbody>
-              {(() => {
-                const teamStats = {}; // Object to store win and loss counts for each team
+              {teams.map((team, teamIndex) => {
+                const teamPlayers = team.Roster;
+                const teamName = team['Fantasy Team'];
 
-                // Function to calculate ratio and update win-loss records
-                const calculateRatioAndUpdateRecords = (team, selfStat, winLossFieldIndex) => {
-                  const teamStat = team.Stats[winLossFieldIndex]?.StatValue;
-                  const [teamValue, teamTotal] = teamStat.split('/').map(Number);
-                  const [selfValue, selfTotal] = selfStat.split('/').map(Number);
-                  const teamRatio = teamValue / teamTotal;
-                  const selfRatio = selfValue / selfTotal;
+                const fieldGoalMadeSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalMadeCalculated) : sum;
+                }, 0);
+                const fieldGoalMadeAverage = fieldGoalMadeSum / teamPlayers.length;
 
-                  if (!(team.MatchupTeam in teamStats)) {
-                    teamStats[team.MatchupTeam] = {
-                      winNumber: 0,
-                      lossNumber: 0,
-                      tieNumber: 0,
-                    };
-                  }
+                const assistsSum = teamPlayers.reduce((sum, playerData) => {
+                  const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+                  return matchingProjection ? sum + parseFloat(matchingProjection.assists) : sum;
+                }, 0);
+                const assistsAverage = assistsSum / teamPlayers.length;
 
-                  if (selfRatio > teamRatio) {
-                    teamStats[team.MatchupTeam].winNumber++;
-                  } else if (selfRatio < teamRatio) {
-                    teamStats[team.MatchupTeam].lossNumber++;
-                  } else {
-                    teamStats[team.MatchupTeam].tieNumber++;
-                  }
-                };
-
-                // Function to calculate non-ratio category and update win-loss records
-                const calculateAndUpdateRecords = (team, selfStat, winLossFieldIndex) => {
-                  const teamStat = team.Stats[winLossFieldIndex]?.StatValue;
-
-                  if (!(team.MatchupTeam in teamStats)) {
-                    teamStats[team.MatchupTeam] = {
-                      winNumber: 0,
-                      lossNumber: 0,
-                      tieNumber: 0,
-                    };
-                  }
-
-                  if (selfStat > teamStat) {
-                    teamStats[team.MatchupTeam].winNumber++;
-                  } else if (selfStat < teamStat) {
-                    teamStats[team.MatchupTeam].lossNumber++;
-                  } else {
-                    teamStats[team.MatchupTeam].tieNumber++;
-                  }
-                };
-
-                // Function to calculate turnover and update win-loss records
-                const calculateToAndUpdateRecords = (team, selfStat, winLossFieldIndex) => {
-                  const teamStat = team.Stats[winLossFieldIndex]?.StatValue;
-
-                  if (!(team.MatchupTeam in teamStats)) {
-                    teamStats[team.MatchupTeam] = {
-                      winNumber: 0,
-                      lossNumber: 0,
-                      tieNumber: 0,
-                    };
-                  }
-
-                  if (selfStat < teamStat) {
-                    teamStats[team.MatchupTeam].winNumber++;
-                  } else if (selfStat > teamStat) {
-                    teamStats[team.MatchupTeam].lossNumber++;
-                  } else {
-                    teamStats[team.MatchupTeam].tieNumber++;
-                  }
-                };
-
-                matchupData[0]?.Matchup.forEach((team) => {
-                  if (team.MatchupTeam !== selfTeamName) {
-                    const selfFg = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[0]?.StatValue;
-                    const selfFt = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[2]?.StatValue;
-                    const selfTpm = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[4]?.StatValue;
-                    const selfPts = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[5]?.StatValue;
-                    const selfReb = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[6]?.StatValue;
-                    const selfAst = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[7]?.StatValue;
-                    const selfStl = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[8]?.StatValue;
-                    const selfBlk = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[9]?.StatValue;
-                    const selfTo = matchupData[0]?.Matchup.find(t => t.MatchupTeam === selfTeamName)?.Stats[10]?.StatValue;
-
-                    calculateRatioAndUpdateRecords(team, selfFg, 0); // FGM/FGA
-                    calculateRatioAndUpdateRecords(team, selfFt, 2); // FTM/FTA
-
-                    calculateAndUpdateRecords(team, selfTpm, 4); // 3PM
-                    calculateAndUpdateRecords(team, selfPts, 5); // PTS
-                    calculateAndUpdateRecords(team, selfReb, 6); // REB
-                    calculateAndUpdateRecords(team, selfAst, 7); // AST
-                    calculateAndUpdateRecords(team, selfStl, 8); // STL
-                    calculateAndUpdateRecords(team, selfBlk, 9); // BLK
-
-                    calculateToAndUpdateRecords(team, selfTo, 10); // TO
-                  }
-                });
-
-                return matchupData[0]?.Matchup.map((matchup, index) => (
-                  <tr key={index}>
-                    <td className="bold centered">{matchup.MatchupTeam}</td>
-                    {matchup.Stats.map((stat, statIndex) => (
-                      <td className="bold centered" key={statIndex}>{stat.StatValue}</td>
-                    ))}
-                    <td className="bold centered">
-                      {matchup.MatchupTeam === selfTeamName ? (
-                        ''
-                      ) : (
-                        `${teamStats[matchup.MatchupTeam].winNumber}-${teamStats[matchup.MatchupTeam].lossNumber}-${teamStats[matchup.MatchupTeam].tieNumber}`
-                      )}
-                    </td>
-                  </tr>
-                ));
-              })()}
+                return (
+                  <React.Fragment key={teamIndex}>
+                    <tr>
+                      <td className="bold centered">{teamName}</td>
+                      <td className="bold centered">{fieldGoalMadeAverage.toFixed(3)}</td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered">{assistsAverage.toFixed(3)}</td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                      <td className="bold centered"></td>
+                    </tr>
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
-      ) : null}
-    </div> */}
+      ) : (
+        <>
+          <p>Failed to fetch data from the backend.</p>
+        </>
+      )}
+    </div>
 
 
 
