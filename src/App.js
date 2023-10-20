@@ -135,32 +135,50 @@ function Home() {
     "19": "TO"
   };
 
-  /* let sortedTeams;
-  let selfTeamRank;
-  if (teams) {
-      sortedTeams = teams.slice().sort((teamA, teamB) => {
-        const avgA = calculateThreePointMadeAverage(teamA.Roster);
-        const avgB = calculateThreePointMadeAverage(teamB.Roster);
-        return avgB - avgA;
-      });
+  let threePointMadeSortedTeams;
+  let pointSortedTeams;
+  let selfThreePointMadeRank;
+  let selfPointRank;
 
-      const selfTeamRank = sortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
+  if (teams) {
+      threePointMadeSortedTeams = teams.slice().sort((teamA, teamB) => {
+        const sumA = calculateThreePointMadeSum(teamA.Roster);
+        const sumB = calculateThreePointMadeSum(teamB.Roster);
+        return sumB - sumA;
+      });
+      selfThreePointMadeRank = threePointMadeSortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
+
+      pointSortedTeams = teams.slice().sort((teamA, teamB) => {
+        const sumA = calculatePointSum(teamA.Roster);
+        const sumB = calculatePointSum(teamB.Roster);
+        return sumB - sumA;
+      });
+      selfPointRank = pointSortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
   }
 
-  function calculateThreePointMadeAverage(roster) {
+  function calculateThreePointMadeSum(roster) {
     const threePointMadeSum = roster.reduce((sum, playerData) => {
-      // Check if projectionData is null or undefined before using 'find'
       if (projectionData) {
         const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
         return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
       } else {
-        // Handle the case when projectionData is null or undefined, for example, return 0.
         return sum;
       }
     }, 0);
+    return threePointMadeSum;
+  }
 
-    return threePointMadeSum / roster.length;
-  } */
+  function calculatePointSum(roster) {
+    const pointSum = roster.reduce((sum, playerData) => {
+      if (projectionData) {
+        const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+        return matchingProjection ? sum + parseFloat(matchingProjection.points) : sum;
+      } else {
+        return sum;
+      }
+    }, 0);
+    return pointSum;
+  }
 
   return (
     <>
@@ -696,7 +714,7 @@ function Home() {
               })}
 
               {/* RANKING row */}
-              {/* <tr>
+              <tr>
                 <td className="bold centered">RANKING</td>
                 <td className="bold centered"></td>
                 <td className="bold centered"></td>
@@ -704,8 +722,15 @@ function Home() {
                 <td className="bold centered"></td>
                 <td className="bold centered"></td>
                 <td className="bold centered"></td>
-                <td className="bold centered">{selfTeamRank}</td>
-              </tr> */}
+                <td className="bold centered">{selfThreePointMadeRank}</td>
+                <td className="bold centered">{selfPointRank}</td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+              </tr>
 
             </tbody>
           </table>
