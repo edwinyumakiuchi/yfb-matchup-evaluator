@@ -2,20 +2,65 @@ yahoo_redirect_uri: "https://localhost"
 yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
 yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 
-# Hali
+# mxm
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "1"
+
+# grdz
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "2"
+
+# Boston
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "3"
+
+# Rustin Aeaves
 yahoo_year_id: "428"
 yahoo_league_id: "57655"
 yahoo_team_id: "4"
+
+# Luka
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "5"
+
+# Scottie
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "6"
+
+# Abominable
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "7"
+
+# Rob Pelinka
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "8"
+
+# ReadySetGuo
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "9"
 
 # Anthony Edwards
 # yahoo_year_id: "428"
 # yahoo_league_id: "57655"
 # yahoo_team_id: "10"
 
-# Shai
+# Ghai
 # yahoo_year_id: "428"
 # yahoo_league_id: "57655"
 # yahoo_team_id: "11"
+
+# TTc8
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "12"
 
 # Jimmy's Fantasy Team
 # yahoo_year_id: "428"
@@ -32,15 +77,40 @@ yahoo_team_id: "4"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "3"
 
+# Kawaii
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "4"
+
+# Slim Shai-dy
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "5"
+
 # Cohn Jollins
 # yahoo_year_id: "428"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "6"
 
+# Los Dodgers
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "7"
+
 # Brazilianaire
 # yahoo_year_id: "428"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "8"
+
+# Luck the Fakers
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "9"
+
+# Hunghuei
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "10"
 
 # Sarcus Mmart
 # yahoo_year_id: "418"

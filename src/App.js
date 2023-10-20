@@ -135,6 +135,33 @@ function Home() {
     "19": "TO"
   };
 
+  /* let sortedTeams;
+  let selfTeamRank;
+  if (teams) {
+      sortedTeams = teams.slice().sort((teamA, teamB) => {
+        const avgA = calculateThreePointMadeAverage(teamA.Roster);
+        const avgB = calculateThreePointMadeAverage(teamB.Roster);
+        return avgB - avgA;
+      });
+
+      const selfTeamRank = sortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
+  }
+
+  function calculateThreePointMadeAverage(roster) {
+    const threePointMadeSum = roster.reduce((sum, playerData) => {
+      // Check if projectionData is null or undefined before using 'find'
+      if (projectionData) {
+        const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
+        return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
+      } else {
+        // Handle the case when projectionData is null or undefined, for example, return 0.
+        return sum;
+      }
+    }, 0);
+
+    return threePointMadeSum / roster.length;
+  } */
+
   return (
     <>
     <div style={{ marginLeft: '20px' }}>
@@ -415,6 +442,7 @@ function Home() {
             </thead>
             <tbody>
               {teams.map((team, teamIndex) => {
+              {/* {sortedTeams.map((team, teamIndex) => { */}
                 const teamPlayers = team.Roster;
                 const teamName = team['Fantasy Team'];
 
@@ -422,71 +450,71 @@ function Home() {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalMadeCalculated) : sum;
                 }, 0);
-                const fieldGoalMadeAverage = fieldGoalMadeSum / teamPlayers.length;
+                // const fieldGoalMadeAverage = fieldGoalMadeSum / teamPlayers.length;
 
                 const fieldGoalAttemptSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalAttempt) : sum;
                 }, 0);
-                const fieldGoalAttemptAverage = fieldGoalAttemptSum / teamPlayers.length;
+                // const fieldGoalAttemptAverage = fieldGoalAttemptSum / teamPlayers.length;
 
-                const fieldGoal = fieldGoalMadeAverage / fieldGoalAttemptAverage
+                const fieldGoal = fieldGoalMadeSum / fieldGoalAttemptSum
 
                 const freeThrowMadeSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowMadeCalculated) : sum;
                 }, 0);
-                const freeThrowMadeAverage = freeThrowMadeSum / teamPlayers.length;
+                // const freeThrowMadeAverage = freeThrowMadeSum / teamPlayers.length;
 
                 const freeThrowAttemptSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowAttempt) : sum;
                 }, 0);
-                const freeThrowAttemptAverage = freeThrowAttemptSum / teamPlayers.length;
+                // const freeThrowAttemptAverage = freeThrowAttemptSum / teamPlayers.length;
 
-                const freeThrow = freeThrowMadeAverage / freeThrowAttemptAverage
+                const freeThrow = freeThrowMadeSum / freeThrowAttemptSum
 
                 const threePointMadeSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
                 }, 0);
-                const threePointMadeAverage = threePointMadeSum / teamPlayers.length;
+                // const threePointMadeAverage = threePointMadeSum / teamPlayers.length;
 
                 const pointsSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.points) : sum;
                 }, 0);
-                const pointsAverage = pointsSum / teamPlayers.length;
+                // const pointsAverage = pointsSum / teamPlayers.length;
 
                 const totalReboundsSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.totalRebounds) : sum;
                 }, 0);
-                const totalReboundsAverage = totalReboundsSum / teamPlayers.length;
+                // const totalReboundsAverage = totalReboundsSum / teamPlayers.length;
 
                 const assistsSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.assists) : sum;
                 }, 0);
-                const assistsAverage = assistsSum / teamPlayers.length;
+                // const assistsAverage = assistsSum / teamPlayers.length;
 
                 const stealsSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.steals) : sum;
                 }, 0);
-                const stealsAverage = stealsSum / teamPlayers.length;
+                // const stealsAverage = stealsSum / teamPlayers.length;
 
                 const blocksSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.blocks) : sum;
                 }, 0);
-                const blocksAverage = blocksSum / teamPlayers.length;
+                // const blocksAverage = blocksSum / teamPlayers.length;
 
                 const turnoversSum = teamPlayers.reduce((sum, playerData) => {
                   const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                   return matchingProjection ? sum + parseFloat(matchingProjection.turnovers) : sum;
                 }, 0);
-                const turnoversAverage = turnoversSum / teamPlayers.length;
+                // const turnoversAverage = turnoversSum / teamPlayers.length;
 
                 let wins = 0;
                 let losses = 0;
@@ -502,15 +530,15 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalMadeCalculated) : sum;
                     }, 0);
-                    const selfFieldGoalMadeAverage = selfFieldGoalMadeSum / selfTeam.Roster.length;
+                    // const selfFieldGoalMadeAverage = selfFieldGoalMadeSum / selfTeam.Roster.length;
 
                     const selfFieldGoalAttemptSum = selfTeam.Roster.reduce((sum, playerData) => {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.fieldGoalAttempt) : sum;
                     }, 0);
-                    const selfFieldGoalAttemptAverage = selfFieldGoalAttemptSum / selfTeam.Roster.length;
+                    // const selfFieldGoalAttemptAverage = selfFieldGoalAttemptSum / selfTeam.Roster.length;
 
-                    const selfFieldGoal = selfFieldGoalMadeAverage / selfFieldGoalAttemptAverage;
+                    const selfFieldGoal = selfFieldGoalMadeSum / selfFieldGoalAttemptSum;
 
                     if (selfFieldGoal > fieldGoal) {
                       wins++;
@@ -524,15 +552,15 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowMadeCalculated) : sum;
                     }, 0);
-                    const selfFreeThrowMadeAverage = selfFreeThrowMadeSum / selfTeam.Roster.length;
+                    // const selfFreeThrowMadeAverage = selfFreeThrowMadeSum / selfTeam.Roster.length;
 
                     const selfFreeThrowAttemptSum = selfTeam.Roster.reduce((sum, playerData) => {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.freeThrowAttempt) : sum;
                     }, 0);
-                    const selfFreeThrowAttemptAverage = selfFreeThrowAttemptSum / selfTeam.Roster.length;
+                    // const selfFreeThrowAttemptAverage = selfFreeThrowAttemptSum / selfTeam.Roster.length;
 
-                    const selfFreeThrow = selfFreeThrowMadeAverage / selfFreeThrowAttemptAverage;
+                    const selfFreeThrow = selfFreeThrowMadeSum / selfFreeThrowAttemptSum;
 
                     if (selfFreeThrow > freeThrow) {
                       wins++;
@@ -546,11 +574,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
                     }, 0);
-                    const selfThreePointMadeAverage = selfThreePointMadeSum / selfTeam.Roster.length;
+                    // const selfThreePointMadeAverage = selfThreePointMadeSum / selfTeam.Roster.length;
 
-                    if (selfThreePointMadeAverage > threePointMadeAverage) {
+                    if (selfThreePointMadeSum > threePointMadeSum) {
                       wins++;
-                    } else if (selfThreePointMadeAverage < threePointMadeAverage) {
+                    } else if (selfThreePointMadeSum < threePointMadeSum) {
                       losses++;
                     } else {
                       ties++;
@@ -560,11 +588,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.points) : sum;
                     }, 0);
-                    const selfPointsAverage = selfPointsSum / selfTeam.Roster.length;
+                    // const selfPointsAverage = selfPointsSum / selfTeam.Roster.length;
 
-                    if (selfPointsAverage > pointsAverage) {
+                    if (selfPointsSum > pointsSum) {
                       wins++;
-                    } else if (selfPointsAverage < pointsAverage) {
+                    } else if (selfPointsSum < pointsSum) {
                       losses++;
                     } else {
                       ties++;
@@ -574,11 +602,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.totalRebounds) : sum;
                     }, 0);
-                    const selfReboundsAverage = selfReboundsSum / selfTeam.Roster.length;
+                    // const selfReboundsAverage = selfReboundsSum / selfTeam.Roster.length;
 
-                    if (selfReboundsAverage > totalReboundsAverage) {
+                    if (selfReboundsSum > totalReboundsSum) {
                       wins++;
-                    } else if (selfReboundsAverage < totalReboundsAverage) {
+                    } else if (selfReboundsSum < totalReboundsSum) {
                       losses++;
                     } else {
                       ties++;
@@ -588,11 +616,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.assists) : sum;
                     }, 0);
-                    const selfAssistsAverage = selfAssistsSum / selfTeam.Roster.length;
+                    // const selfAssistsAverage = selfAssistsSum / selfTeam.Roster.length;
 
-                    if (selfAssistsAverage > assistsAverage) {
+                    if (selfAssistsSum > assistsSum) {
                       wins++;
-                    } else if (selfAssistsAverage < assistsAverage) {
+                    } else if (selfAssistsSum < assistsSum) {
                       losses++;
                     } else {
                       ties++;
@@ -602,11 +630,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.steals) : sum;
                     }, 0);
-                    const selfStealsAverage = selfStealsSum / selfTeam.Roster.length;
+                    // const selfStealsAverage = selfStealsSum / selfTeam.Roster.length;
 
-                    if (selfStealsAverage > stealsAverage) {
+                    if (selfStealsSum > stealsSum) {
                       wins++;
-                    } else if (selfStealsAverage < stealsAverage) {
+                    } else if (selfStealsSum < stealsSum) {
                       losses++;
                     } else {
                       ties++;
@@ -616,11 +644,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.blocks) : sum;
                     }, 0);
-                    const selfBlocksAverage = selfBlocksSum / selfTeam.Roster.length;
+                    // const selfBlocksAverage = selfBlocksSum / selfTeam.Roster.length;
 
-                    if (selfBlocksAverage > blocksAverage) {
+                    if (selfBlocksSum > blocksSum) {
                       wins++;
-                    } else if (selfBlocksAverage < blocksAverage) {
+                    } else if (selfBlocksSum < blocksSum) {
                       losses++;
                     } else {
                       ties++;
@@ -630,11 +658,11 @@ function Home() {
                       const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
                       return matchingProjection ? sum + parseFloat(matchingProjection.turnovers) : sum;
                     }, 0);
-                    const selfTurnoversAverage = selfTurnoversSum / selfTeam.Roster.length;
+                    // const selfTurnoversAverage = selfTurnoversSum / selfTeam.Roster.length;
 
-                    if (selfTurnoversAverage < turnoversAverage) {
+                    if (selfTurnoversSum < turnoversSum) {
                       wins++;
-                    } else if (selfTurnoversAverage > turnoversAverage) {
+                    } else if (selfTurnoversSum > turnoversSum) {
                       losses++;
                     } else {
                       ties++;
@@ -648,24 +676,37 @@ function Home() {
                   <React.Fragment key={teamIndex}>
                     <tr>
                       <td className="bold centered">{teamName}</td>
-                      <td className="bold centered">{fieldGoalMadeAverage.toFixed(3)}</td>
-                      <td className="bold centered">{fieldGoalAttemptAverage.toFixed(3)}</td>
-                      <td className="bold centered">{fieldGoal.toFixed(3)}</td>
-                      <td className="bold centered">{freeThrowMadeAverage.toFixed(3)}</td>
-                      <td className="bold centered">{freeThrowAttemptAverage.toFixed(3)}</td>
-                      <td className="bold centered">{freeThrow.toFixed(3)}</td>
-                      <td className="bold centered">{threePointMadeAverage.toFixed(3)}</td>
-                      <td className="bold centered">{pointsAverage.toFixed(3)}</td>
-                      <td className="bold centered">{totalReboundsAverage.toFixed(3)}</td>
-                      <td className="bold centered">{assistsAverage.toFixed(3)}</td>
-                      <td className="bold centered">{stealsAverage.toFixed(3)}</td>
-                      <td className="bold centered">{blocksAverage.toFixed(3)}</td>
-                      <td className="bold centered">{turnoversAverage.toFixed(3)}</td>
+                      <td className="bold centered">{fieldGoalMadeSum.toFixed(3)}</td>
+                      <td className="bold centered">{fieldGoalAttemptSum.toFixed(1)}</td>
+                      <td className="bold centered">{fieldGoal.toFixed(4)}</td>
+                      <td className="bold centered">{freeThrowMadeSum.toFixed(3)}</td>
+                      <td className="bold centered">{freeThrowAttemptSum.toFixed(1)}</td>
+                      <td className="bold centered">{freeThrow.toFixed(4)}</td>
+                      <td className="bold centered">{threePointMadeSum.toFixed(1)}</td>
+                      <td className="bold centered">{pointsSum.toFixed(1)}</td>
+                      <td className="bold centered">{totalReboundsSum.toFixed(1)}</td>
+                      <td className="bold centered">{assistsSum.toFixed(1)}</td>
+                      <td className="bold centered">{stealsSum.toFixed(1)}</td>
+                      <td className="bold centered">{blocksSum.toFixed(1)}</td>
+                      <td className="bold centered">{turnoversSum.toFixed(1)}</td>
                       <td className="bold centered">{score}</td>
                     </tr>
                   </React.Fragment>
                 );
               })}
+
+              {/* RANKING row */}
+              {/* <tr>
+                <td className="bold centered">RANKING</td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered"></td>
+                <td className="bold centered">{selfTeamRank}</td>
+              </tr> */}
+
             </tbody>
           </table>
         </div>
