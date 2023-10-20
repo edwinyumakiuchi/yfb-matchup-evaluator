@@ -2,15 +2,40 @@ yahoo_redirect_uri: "https://localhost"
 yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
 yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 
-# Jimmy's Fantasy Team
+# Hali
 yahoo_year_id: "428"
-yahoo_league_id: "103875"
-yahoo_team_id: "1"
+yahoo_league_id: "57655"
+yahoo_team_id: "4"
+
+# Anthony Edwards
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "10"
+
+# Shai
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "11"
+
+# Jimmy's Fantasy Team
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "1"
 
 # Giannis
 # yahoo_year_id: "428"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "2"
+
+# Jokic
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "3"
+
+# Cohn Jollins
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "6"
 
 # Brazilianaire
 # yahoo_year_id: "428"
