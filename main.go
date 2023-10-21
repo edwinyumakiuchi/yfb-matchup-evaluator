@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"strconv"
     "net/http"
@@ -210,6 +211,20 @@ func main() {
             teamProjection["turnovers"] = turnoversData
 
             teamProjections = append(teamProjections, teamProjection)
+        }
+
+        // Custom sorting function
+        sort.Slice(teamProjections, func(i, j int) bool {
+            assistsI := teamProjections[i]["assists"].(map[string]interface{})
+            assistsJ := teamProjections[j]["assists"].(map[string]interface{})
+            valueI := assistsI["value"].(float64)
+            valueJ := assistsJ["value"].(float64)
+            return valueI > valueJ
+        })
+
+        // Assign ranks based on sorted order
+        for i := range teamProjections {
+            teamProjections[i]["assists"].(map[string]interface{})["rank"] = i + 1
         }
 
         // Convert to JSON and print or use as needed
