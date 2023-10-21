@@ -90,6 +90,17 @@ function Home() {
       });
   }, []);
 
+  useEffect(() => {
+    fetch('/seasonOutlook')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("seasonOutlook: data - ", data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
   const calculateField = (field) => {
     if (!gameData || !data || !projectionData) return 0;
 
@@ -183,7 +194,7 @@ function Home() {
   return (
     <>
     <div style={{ marginLeft: '20px' }}>
-      {data && projectionData ? (
+      {data && projectionData && gameData ? (
         <div>
           <table className="bordered-table">
             <thead className="header-row">

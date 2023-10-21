@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"strings"
+	"strconv"
     "net/http"
+    "encoding/json"
 
 	"yfb-matchup-evaluator/util"
 	"yfb-matchup-evaluator/config"
@@ -48,29 +50,93 @@ func main() {
 		yahoo.New(secretConfig.YahooClientID, secretConfig.YahooClientSecret, config.YahooRedirectURI),
 	)
 
-	r.Get("/yahooRosters", func(res http.ResponseWriter, req *http.Request) {
-	    yahooRosters, err := util.RetrieveMongoData("yahoo", "rosters")
-        if err != nil {
-            fmt.Println("Error retrieving yahoo rosters:", err)
+    hbProjections, err := util.RetrieveMongoData("sample-nba", "projections")
+    if err != nil {
+        fmt.Println("Error retrieving hashtagbasketball projections:", err)
+        return
+    }
+    fmt.Println("Hashtagbasketball projections retrieved successfully!")
+
+    yahooRosters, err := util.RetrieveMongoData("yahoo", "rosters")
+    if err != nil {
+        fmt.Println("Error retrieving yahoo rosters:", err)
+        return
+    }
+    fmt.Println("Yahoo rosters retrieved successfully!")
+    // fmt.Println("yahooRosters:", string(yahooRosters))
+
+    r.Get("/seasonOutlook", func(res http.ResponseWriter, req *http.Request) {
+        var rosters []map[string]interface{}
+        if err := json.Unmarshal(yahooRosters, &rosters); err != nil {
+            fmt.Println("Error parsing yahooRosters:", err)
             return
         }
 
-        fmt.Println("Yahoo rosters retrieved successfully!")
-        // fmt.Println("yahooRosters:", string(yahooRosters))
+        teamStats := make(map[string]map[string]float64)
+        for _, roster := range rosters {
+            teamName := roster["Fantasy Team"].(string)
+            // Initialize teamStats with the desired keys for statistics
+            if teamStats[teamName] == nil {
+                teamStats[teamName] = make(map[string]float64)
+                teamStats[teamName]["assists"] = 0
+                teamStats[teamName]["blocks"] = 0
+            }
+        }
 
+        // Parse the JSON data from hbProjections
+        var projections []map[string]interface{}
+        if err := json.Unmarshal(hbProjections, &projections); err != nil {
+            fmt.Println("Error parsing hbProjections:", err)
+            return
+        }
+
+        // Iterate through teamStats and match players with projections
+        for _, roster := range rosters {
+            teamName := roster["Fantasy Team"].(string)
+
+            for _, playerData := range roster["Roster"].([]interface{}) {
+                player := playerData.(map[string]interface{})
+                playerName := player["Player"].(string)
+
+                for _, projection := range projections {
+                    if projection["name"].(string) == playerName {
+                        assists, _ := strconv.ParseFloat(projection["assists"].(string), 64)
+                        blocks, _ := strconv.ParseFloat(projection["blocks"].(string), 64)
+                        teamStats[teamName]["assists"] += assists
+                        teamStats[teamName]["blocks"] += blocks
+                    }
+                }
+            }
+        }
+
+        // Calculate team projections and convert to JSON
+        var teamProjections []map[string]interface{}
+        for team, stats := range teamStats {
+            teamProjection := make(map[string]interface{})
+            teamProjection["Fantasy Team"] = team
+            totalAssists := stats["assists"]
+            totalBlocks := stats["blocks"]
+
+            teamProjection["assists"] = formatFloat(totalAssists, 1)
+            teamProjection["blocks"] = formatFloat(totalBlocks, 1)
+
+            teamProjections = append(teamProjections, teamProjection)
+        }
+
+        // Convert to JSON and print or use as needed
+        teamProjectionJSON, _ := json.Marshal(teamProjections)
+        fmt.Println("Team Projections:", string(teamProjectionJSON))
+
+        res.Header().Set("Content-Type", "application/json")
+        res.Write(teamProjectionJSON)
+    })
+
+	r.Get("/yahooRosters", func(res http.ResponseWriter, req *http.Request) {
         res.Header().Set("Content-Type", "application/json")
         res.Write(yahooRosters)
 	})
 
 	r.Get("/hbProjections", func(res http.ResponseWriter, req *http.Request) {
-	    hbProjections, err := util.RetrieveMongoData("sample-nba", "projections")
-        if err != nil {
-            fmt.Println("Error retrieving hashtagbasketball projections:", err)
-            return
-        }
-
-        fmt.Println("Hashtagbasketball projections retrieved successfully!")
-
         res.Header().Set("Content-Type", "application/json")
         res.Write(hbProjections)
 	})
@@ -81,7 +147,6 @@ func main() {
             fmt.Println("Error retrieving hashtagbasketball advanced-nba-schedule-grid:", err)
             return
         }
-
         fmt.Println("Hashtagbasketball advanced-nba-schedule-grid retrieved successfully!")
 
         res.Header().Set("Content-Type", "application/json")
@@ -148,4 +213,10 @@ func main() {
 	fmt.Println("Starting backend server on port", port)
 	http.Handle("/", r)
 	http.ListenAndServe(port, nil)
+}
+
+func formatFloat(value float64, decimals int) float64 {
+    format := fmt.Sprintf("%%.%df", decimals)
+    formattedValue, _ := strconv.ParseFloat(fmt.Sprintf(format, value), 64)
+    return formattedValue
 }
