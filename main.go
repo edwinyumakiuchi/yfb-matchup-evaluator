@@ -213,18 +213,27 @@ func main() {
             teamProjections = append(teamProjections, teamProjection)
         }
 
-        // Custom sorting function
-        sort.Slice(teamProjections, func(i, j int) bool {
-            assistsI := teamProjections[i]["assists"].(map[string]interface{})
-            assistsJ := teamProjections[j]["assists"].(map[string]interface{})
-            valueI := assistsI["value"].(float64)
-            valueJ := assistsJ["value"].(float64)
-            return valueI > valueJ
-        })
+        // Define the categories to process
+        categories := []string{"fieldGoal", "freeThrow", "threePointMade", "points", "totalRebounds", "assists", "steals", "blocks", "turnovers"}
 
-        // Assign ranks based on sorted order
-        for i := range teamProjections {
-            teamProjections[i]["assists"].(map[string]interface{})["rank"] = i + 1
+        for _, category := range categories {
+            // Custom sorting function for the current category
+            sort.Slice(teamProjections, func(i, j int) bool {
+                categoryI := teamProjections[i][category].(map[string]interface{})
+                categoryJ := teamProjections[j][category].(map[string]interface{})
+                valueI := categoryI["value"].(float64)
+                valueJ := categoryJ["value"].(float64)
+
+                if category == "turnovers" {
+                    return valueJ > valueI
+                }
+                return valueI > valueJ
+            })
+
+            // Assign ranks based on the sorted order for the current category
+            for i := range teamProjections {
+                teamProjections[i][category].(map[string]interface{})["rank"] = i + 1
+            }
         }
 
         // Convert to JSON and print or use as needed
