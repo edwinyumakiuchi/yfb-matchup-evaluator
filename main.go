@@ -159,19 +159,55 @@ func main() {
             totalBlocks := stats["blocks"]
             totalTurnovers := stats["turnovers"]
 
+            fieldGoalData := make(map[string]interface{})
+            fieldGoalData["value"] = formatFloat(totalFieldGoalMades / totalFieldGoalAttempts, 4)
+            fieldGoalData["rank"] = 4
+
+            freeThrowData := make(map[string]interface{})
+            freeThrowData["value"] = formatFloat(totalFreeThrowMades / totalFreeThrowAttempts, 4)
+            freeThrowData["rank"] = 4
+
+            threePointMadeData := make(map[string]interface{})
+            threePointMadeData["value"] = formatFloat(totalThreePointMade, 1)
+            threePointMadeData["rank"] = 4
+
+            pointsData := make(map[string]interface{})
+            pointsData["value"] = formatFloat(totalPoints, 1)
+            pointsData["rank"] = 4
+
+            totalReboundsData := make(map[string]interface{})
+            totalReboundsData["value"] = formatFloat(totalRebounds, 1)
+            totalReboundsData["rank"] = 4
+
+            assistsData := make(map[string]interface{})
+            assistsData["value"] = formatFloat(totalAssists, 1)
+            assistsData["rank"] = 4
+
+            stealsData := make(map[string]interface{})
+            stealsData["value"] = formatFloat(totalSteals, 1)
+            stealsData["rank"] = 4
+
+            blocksData := make(map[string]interface{})
+            blocksData["value"] = formatFloat(totalBlocks, 1)
+            blocksData["rank"] = 4
+
+            turnoversData := make(map[string]interface{})
+            turnoversData["value"] = formatFloat(totalTurnovers, 1)
+            turnoversData["rank"] = 4
+
             teamProjection["fieldGoalMade"] = formatFloat(totalFieldGoalMades, 3)
             teamProjection["fieldGoalAttempt"] = formatFloat(totalFieldGoalAttempts, 1)
-            teamProjection["fieldGoal"] = formatFloat(totalFieldGoalMades / totalFieldGoalAttempts, 4)
+            teamProjection["fieldGoal"] = fieldGoalData
             teamProjection["freeThrowMade"] = formatFloat(totalFreeThrowMades, 3)
             teamProjection["freeThrowAttempt"] = formatFloat(totalFreeThrowAttempts, 1)
-            teamProjection["freeThrow"] = formatFloat(totalFreeThrowMades / totalFreeThrowAttempts, 4)
-            teamProjection["threePointMade"] = formatFloat(totalThreePointMade, 1)
-            teamProjection["points"] = formatFloat(totalPoints, 1)
-            teamProjection["totalRebounds"] = formatFloat(totalRebounds, 1)
-            teamProjection["assists"] = formatFloat(totalAssists, 1)
-            teamProjection["steals"] = formatFloat(totalSteals, 1)
-            teamProjection["blocks"] = formatFloat(totalBlocks, 1)
-            teamProjection["turnovers"] = formatFloat(totalTurnovers, 1)
+            teamProjection["freeThrow"] = freeThrowData
+            teamProjection["threePointMade"] = threePointMadeData
+            teamProjection["points"] = pointsData
+            teamProjection["totalRebounds"] = totalReboundsData
+            teamProjection["assists"] = assistsData
+            teamProjection["steals"] = stealsData
+            teamProjection["blocks"] = blocksData
+            teamProjection["turnovers"] = turnoversData
 
             teamProjections = append(teamProjections, teamProjection)
         }
