@@ -78,8 +78,20 @@ func main() {
             // Initialize teamStats with the desired keys for statistics
             if teamStats[teamName] == nil {
                 teamStats[teamName] = make(map[string]float64)
+
+                teamStats[teamName]["fieldGoalMade"] = 0
+                teamStats[teamName]["fieldGoalAttempt"] = 0
+                teamStats[teamName]["fieldGoal"] = 0
+                teamStats[teamName]["freeThrowMade"] = 0
+                teamStats[teamName]["freeThrowAttempt"] = 0
+                teamStats[teamName]["freeThrow"] = 0
+                teamStats[teamName]["threePointMade"] = 0
+                teamStats[teamName]["points"] = 0
+                teamStats[teamName]["totalRebounds"] = 0
                 teamStats[teamName]["assists"] = 0
+                teamStats[teamName]["steals"] = 0
                 teamStats[teamName]["blocks"] = 0
+                teamStats[teamName]["turnovers"] = 0
             }
         }
 
@@ -100,10 +112,30 @@ func main() {
 
                 for _, projection := range projections {
                     if projection["name"].(string) == playerName {
+
+                        fieldGoalMade, _ := strconv.ParseFloat(projection["fieldGoalMadeCalculated"].(string), 64)
+                        fieldGoalAttempt, _ := strconv.ParseFloat(projection["fieldGoalAttempt"].(string), 64)
+                        freeThrowMade, _ := strconv.ParseFloat(projection["freeThrowMadeCalculated"].(string), 64)
+                        freeThrowAttempt, _ := strconv.ParseFloat(projection["freeThrowAttempt"].(string), 64)
+                        threePointMade, _ := strconv.ParseFloat(projection["threePointMade"].(string), 64)
+                        points, _ := strconv.ParseFloat(projection["points"].(string), 64)
+                        totalRebounds, _ := strconv.ParseFloat(projection["totalRebounds"].(string), 64)
                         assists, _ := strconv.ParseFloat(projection["assists"].(string), 64)
+                        steals, _ := strconv.ParseFloat(projection["steals"].(string), 64)
                         blocks, _ := strconv.ParseFloat(projection["blocks"].(string), 64)
+                        turnovers, _ := strconv.ParseFloat(projection["turnovers"].(string), 64)
+
+                        teamStats[teamName]["fieldGoalMade"] += fieldGoalMade
+                        teamStats[teamName]["fieldGoalAttempt"] += fieldGoalAttempt
+                        teamStats[teamName]["freeThrowMade"] += freeThrowMade
+                        teamStats[teamName]["freeThrowAttempt"] += freeThrowAttempt
+                        teamStats[teamName]["threePointMade"] += threePointMade
+                        teamStats[teamName]["points"] += points
+                        teamStats[teamName]["totalRebounds"] += totalRebounds
                         teamStats[teamName]["assists"] += assists
+                        teamStats[teamName]["steals"] += steals
                         teamStats[teamName]["blocks"] += blocks
+                        teamStats[teamName]["turnovers"] += turnovers
                     }
                 }
             }
@@ -114,11 +146,32 @@ func main() {
         for team, stats := range teamStats {
             teamProjection := make(map[string]interface{})
             teamProjection["Fantasy Team"] = team
-            totalAssists := stats["assists"]
-            totalBlocks := stats["blocks"]
 
+            totalFieldGoalMades := stats["fieldGoalMade"]
+            totalFieldGoalAttempts := stats["fieldGoalAttempt"]
+            totalFreeThrowMades := stats["freeThrowMade"]
+            totalFreeThrowAttempts := stats["freeThrowAttempt"]
+            totalThreePointMade := stats["threePointMade"]
+            totalPoints := stats["points"]
+            totalRebounds := stats["totalRebounds"]
+            totalAssists := stats["assists"]
+            totalSteals := stats["steals"]
+            totalBlocks := stats["blocks"]
+            totalTurnovers := stats["turnovers"]
+
+            teamProjection["fieldGoalMade"] = formatFloat(totalFieldGoalMades, 3)
+            teamProjection["fieldGoalAttempt"] = formatFloat(totalFieldGoalAttempts, 1)
+            teamProjection["fieldGoal"] = formatFloat(totalFieldGoalMades / totalFieldGoalAttempts, 4)
+            teamProjection["freeThrowMade"] = formatFloat(totalFreeThrowMades, 3)
+            teamProjection["freeThrowAttempt"] = formatFloat(totalFreeThrowAttempts, 1)
+            teamProjection["freeThrow"] = formatFloat(totalFreeThrowMades / totalFreeThrowAttempts, 4)
+            teamProjection["threePointMade"] = formatFloat(totalThreePointMade, 1)
+            teamProjection["points"] = formatFloat(totalPoints, 1)
+            teamProjection["totalRebounds"] = formatFloat(totalRebounds, 1)
             teamProjection["assists"] = formatFloat(totalAssists, 1)
+            teamProjection["steals"] = formatFloat(totalSteals, 1)
             teamProjection["blocks"] = formatFloat(totalBlocks, 1)
+            teamProjection["turnovers"] = formatFloat(totalTurnovers, 1)
 
             teamProjections = append(teamProjections, teamProjection)
         }
