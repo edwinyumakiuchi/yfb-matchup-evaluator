@@ -37,6 +37,7 @@ function Home() {
   const [projectionData, setProjectionData] = useState(null);
   const [gameData, setGameData] = useState(null);
   const [matchupData, setMatchupData] = useState(null);
+  const [seasonOutlookData, setSeasonOutlookData] = useState(null);
 
   useEffect(() => {
     fetch('/yahooRosters')
@@ -94,7 +95,7 @@ function Home() {
     fetch('/seasonOutlook')
       .then((response) => response.json())
       .then((data) => {
-        console.log("seasonOutlook: data - ", data);
+        setSeasonOutlookData(data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -724,24 +725,71 @@ function Home() {
                 );
               })}
 
-              {/* RANKING row */}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          <p>Failed to fetch data from the backend.</p>
+        </>
+      )}
+    </div>
+
+    <div style={{ marginLeft: '20px' }}>
+      {seasonOutlookData ? (
+        <div>
+          <h2>Ranking per Category</h2>
+          <table className="bordered-table">
+            <thead className="header-row">
               <tr>
-                <td className="bold centered">RANKING</td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered">{selfThreePointMadeRank}</td>
-                <td className="bold centered">{selfPointRank}</td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
-                <td className="bold centered"></td>
+                <th className="bold centered">FANTASY TEAM</th>
+                <th className="bold centered">FG%</th>
+                <th className="bold centered">FT%</th>
+                <th className="bold centered">3PTM</th>
+                <th className="bold centered">PTS</th>
+                <th className="bold centered">REB</th>
+                <th className="bold centered">AST</th>
+                <th className="bold centered">ST</th>
+                <th className="bold centered">BLK</th>
+                <th className="bold centered">TO</th>
               </tr>
+            </thead>
+            <tbody>
+              {teams.map((team, teamIndex) => {
+                const teamName = team["Fantasy Team"];
+
+                // Find the corresponding element in seasonOutlookData
+                const matchingTeamData = seasonOutlookData.find(
+                  (data) => data["Fantasy Team"] === teamName
+                );
+
+                const fieldGoalRank = matchingTeamData ? matchingTeamData["fieldGoal"]["rank"] : '';
+                const freeThrowRank = matchingTeamData ? matchingTeamData["freeThrow"]["rank"] : '';
+                const threePointMadeRank = matchingTeamData ? matchingTeamData["threePointMade"]["rank"] : '';
+                const pointsRank = matchingTeamData ? matchingTeamData["points"]["rank"] : '';
+                const totalReboundsRank = matchingTeamData ? matchingTeamData["totalRebounds"]["rank"] : '';
+                const assistsRank = matchingTeamData ? matchingTeamData["assists"]["rank"] : '';
+                const stealsRank = matchingTeamData ? matchingTeamData["steals"]["rank"] : '';
+                const blocksRank = matchingTeamData ? matchingTeamData["blocks"]["rank"] : '';
+                const turnoversRank = matchingTeamData ? matchingTeamData["turnovers"]["rank"] : '';
+
+                return (
+                  <React.Fragment key={teamIndex}>
+                    <tr>
+                      <td className="bold centered">{teamName}</td>
+                      <td className="bold centered">{fieldGoalRank}</td>
+                      <td className="bold centered">{freeThrowRank}</td>
+                      <td className="bold centered">{threePointMadeRank}</td>
+                      <td className="bold centered">{pointsRank}</td>
+                      <td className="bold centered">{totalReboundsRank}</td>
+                      <td className="bold centered">{assistsRank}</td>
+                      <td className="bold centered">{stealsRank}</td>
+                      <td className="bold centered">{blocksRank}</td>
+                      <td className="bold centered">{turnoversRank}</td>
+                    </tr>
+                  </React.Fragment>
+                );
+              })}
 
             </tbody>
           </table>

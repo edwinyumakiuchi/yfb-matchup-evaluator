@@ -214,7 +214,7 @@ func main() {
         }
 
         // Define the categories to process
-        categories := []string{"fieldGoal", "freeThrow", "threePointMade", "points", "totalRebounds", "assists", "steals", "blocks", "turnovers"}
+        categories := []string{"fieldGoal", "freeThrow", "threePointMade", "totalRebounds", "assists", "steals", "blocks", "turnovers", "points"}
 
         for _, category := range categories {
             // Custom sorting function for the current category
@@ -238,7 +238,7 @@ func main() {
 
         // Convert to JSON and print or use as needed
         teamProjectionJSON, _ := json.Marshal(teamProjections)
-        fmt.Println("Team Projections:", string(teamProjectionJSON))
+        // fmt.Println("Team Projections:", string(teamProjectionJSON))
 
         res.Header().Set("Content-Type", "application/json")
         res.Write(teamProjectionJSON)
