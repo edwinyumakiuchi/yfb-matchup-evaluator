@@ -38,6 +38,7 @@ function Home() {
   const [gameData, setGameData] = useState(null);
   const [matchupData, setMatchupData] = useState(null);
   const [seasonOutlookData, setSeasonOutlookData] = useState(null);
+  const [teamRankingData, setTeamRankingData] = useState(null);
 
   useEffect(() => {
     fetch('/yahooRosters')
@@ -96,6 +97,17 @@ function Home() {
       .then((response) => response.json())
       .then((data) => {
         setSeasonOutlookData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch('/scoreProjection')
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamRankingData(data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
