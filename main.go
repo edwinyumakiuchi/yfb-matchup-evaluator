@@ -113,8 +113,6 @@ func main() {
             return
         }
 
-        fmt.Println("\ntotalProjectionJSONString:", string(totalProjectionJSONString))
-
         res.Header().Set("Content-Type", "application/json")
         res.Write(totalProjectionJSONString)
     })

@@ -18,9 +18,9 @@ yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 # yahoo_team_id: "3"
 
 # Rustin Aeaves
-# yahoo_year_id: "428"
-# yahoo_league_id: "57655"
-# yahoo_team_id: "4"
+yahoo_year_id: "428"
+yahoo_league_id: "57655"
+yahoo_team_id: "4"
 
 # Livin' La Vida Luka
 # yahoo_year_id: "428"
@@ -63,9 +63,9 @@ yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 # yahoo_team_id: "12"
 
 # Myrese Taxey
-yahoo_year_id: "428"
-yahoo_league_id: "103875"
-yahoo_team_id: "1"
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "1"
 
 # Aiannis Gntetokounmpo
 # yahoo_year_id: "428"

@@ -822,7 +822,7 @@ function Home() {
               <tr>
                 <th className="bold centered">FANTASY TEAM</th>
                 {teamRankingData.map((teamData, index) => {
-                  const teamName = teamData['Fantasy Team']; // Use the value with the field "Fantasy Team"
+                  const teamName = teamData['Fantasy Team'];
                   return (
                     <th key={index} className="bold centered">
                       {teamName}
@@ -844,13 +844,24 @@ function Home() {
                       const ties = teamData[opponentName] ? teamData[opponentName].Ties : '-';
                       return (
                         <td key={opponentIndex} className="bold centered">
-                          {teamName === opponentName ? '-' : `${wins}-${losses}-${ties}`}
+                          {teamName === opponentName ? '-' : `${losses}-${wins}-${ties}`}
                         </td>
                       );
                     })}
                   </tr>
                 );
               })}
+              <tr>
+                <td className="bold centered">Total Score</td>
+                {teamRankingData.map((teamData, index) => {
+                  const averageTotalScore = teamData['Average'] ? teamData['Average'].TotalScore : '-';
+                  return (
+                    <td key={index} className="bold centered">
+                      {averageTotalScore}
+                    </td>
+                  );
+                })}
+              </tr>
             </tbody>
           </table>
         </div>
