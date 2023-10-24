@@ -857,7 +857,7 @@ function Home() {
                   const averageTotalScore = teamData['Average'] ? teamData['Average'].TotalScore : '-';
                   return (
                     <td key={index} className="bold centered">
-                      {averageTotalScore}
+                      {averageTotalScore.toFixed(3)}
                     </td>
                   );
                 })}
