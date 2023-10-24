@@ -105,10 +105,18 @@ func main() {
                 scoreProjection[len(scoreProjection)-1][k] = v
             }
         }
-        scoreProjectionJSON, _ := json.Marshal(scoreProjection)
+
+        updatedProjectionJSON := calculateAverages(scoreProjection)
+        updatedProjectionJSONString, err := json.Marshal(updatedProjectionJSON)
+        if err != nil {
+            fmt.Println("Error marshaling updatedProjectionJSON: ", err)
+            return
+        }
+
+        fmt.Println("\nupdatedProjectionJSON:", string(updatedProjectionJSONString))
 
         res.Header().Set("Content-Type", "application/json")
-        res.Write(scoreProjectionJSON)
+        res.Write(updatedProjectionJSONString)
     })
 
     r.Get("/seasonOutlook", func(res http.ResponseWriter, req *http.Request) {
@@ -422,3 +430,42 @@ func calculateScore(team, opponentTeam map[string]interface{}) (float64, float64
 	return wins, losses, ties
 }
 
+func calculateAverages(scoreProjectionJSON []map[string]interface{}) []map[string]interface{} {
+	for _, entry := range scoreProjectionJSON {
+		// Create a map for "Average" data
+		averageData := make(map[string]float64)
+
+		// Initialize count for players
+		count := 0
+
+		// Iterate through the players and accumulate wins, losses, and ties
+		for opponentTeam, score := range entry {
+			if opponentTeam != "Fantasy Team" {
+				if playerData, isPlayerData := score.(TeamStats); isPlayerData {
+					win := playerData.Wins
+					loss := playerData.Losses
+					tie := playerData.Ties
+
+					averageData["Wins"] += win
+					averageData["Losses"] += loss
+					averageData["Ties"] += tie
+
+					count++
+				}
+			}
+		}
+
+		// Calculate averages
+		averageData["Wins"] /= float64(count)
+		averageData["Wins"] = float64(int(averageData["Wins"]*1000)) / 1000
+		averageData["Losses"] /= float64(count)
+		averageData["Losses"] = float64(int(averageData["Losses"]*1000)) / 1000
+		averageData["Ties"] /= float64(count)
+		averageData["Ties"] = float64(int(averageData["Ties"]*1000)) / 1000
+
+		// Add the "Average" data to the entry
+		entry["Average"] = averageData
+	}
+
+	return scoreProjectionJSON
+}
