@@ -106,17 +106,17 @@ func main() {
             }
         }
 
-        updatedProjectionJSON := calculateAverages(scoreProjection)
-        updatedProjectionJSONString, err := json.Marshal(updatedProjectionJSON)
+        totalProjectionJSON := calculateAverages(scoreProjection)
+        totalProjectionJSONString, err := json.Marshal(totalProjectionJSON)
         if err != nil {
-            fmt.Println("Error marshaling updatedProjectionJSON: ", err)
+            fmt.Println("Error marshaling totalProjectionJSONString: ", err)
             return
         }
 
-        fmt.Println("\nupdatedProjectionJSON:", string(updatedProjectionJSONString))
+        fmt.Println("\ntotalProjectionJSONString:", string(totalProjectionJSONString))
 
         res.Header().Set("Content-Type", "application/json")
-        res.Write(updatedProjectionJSONString)
+        res.Write(totalProjectionJSONString)
     })
 
     r.Get("/seasonOutlook", func(res http.ResponseWriter, req *http.Request) {

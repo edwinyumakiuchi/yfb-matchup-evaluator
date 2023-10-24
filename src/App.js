@@ -813,6 +813,54 @@ function Home() {
       )}
     </div>
 
+    <div style={{ marginLeft: '20px' }}>
+      {teamRankingData ? (
+        <div>
+          <h2>Team Ranking</h2>
+          <table className="bordered-table">
+            <thead className="header-row">
+              <tr>
+                <th className="bold centered">FANTASY TEAM</th>
+                {teamRankingData.map((teamData, index) => {
+                  const teamName = teamData['Fantasy Team']; // Use the value with the field "Fantasy Team"
+                  return (
+                    <th key={index} className="bold centered">
+                      {teamName}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {teamRankingData.map((teamData, teamIndex) => {
+                const teamName = teamData['Fantasy Team'];
+                return (
+                  <tr key={teamIndex}>
+                    <td className="bold centered">{teamName}</td>
+                    {teamRankingData.map((opponentData, opponentIndex) => {
+                      const opponentName = opponentData['Fantasy Team'];
+                      const wins = teamData[opponentName] ? teamData[opponentName].Wins : '-';
+                      const losses = teamData[opponentName] ? teamData[opponentName].Losses : '-';
+                      const ties = teamData[opponentName] ? teamData[opponentName].Ties : '-';
+                      return (
+                        <td key={opponentIndex} className="bold centered">
+                          {teamName === opponentName ? '-' : `${wins}-${losses}-${ties}`}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          <p>Failed to fetch data from the backend.</p>
+        </>
+      )}
+    </div>
+
     </>
   );
 }
