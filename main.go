@@ -462,10 +462,17 @@ func calculateAverages(scoreProjectionJSON []map[string]interface{}) []map[strin
 		averageData["Losses"] = float64(int(averageData["Losses"]*1000)) / 1000
 		averageData["Ties"] /= float64(count)
 		averageData["Ties"] = float64(int(averageData["Ties"]*1000)) / 1000
+		averageData["TotalScore"] = averageData["Wins"] + (averageData["Ties"] * 0.5)
 
 		// Add the "Average" data to the entry
 		entry["Average"] = averageData
 	}
+
+	sort.Slice(scoreProjectionJSON, func(i, j int) bool {
+		averageI := scoreProjectionJSON[i]["Average"].(map[string]float64)
+		averageJ := scoreProjectionJSON[j]["Average"].(map[string]float64)
+		return averageI["TotalScore"] > averageJ["TotalScore"]
+	})
 
 	return scoreProjectionJSON
 }
