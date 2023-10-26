@@ -380,9 +380,9 @@ function Home() {
                     };
                   }
 
-                  if (selfStat > teamStat) {
+                  if (parseInt(selfStat) > parseInt(teamStat)) {
                     teamStats[team.MatchupTeam].winNumber++;
-                  } else if (selfStat < teamStat) {
+                  } else if (parseInt(selfStat) < parseInt(teamStat)) {
                     teamStats[team.MatchupTeam].lossNumber++;
                   } else {
                     teamStats[team.MatchupTeam].tieNumber++;
@@ -401,9 +401,9 @@ function Home() {
                     };
                   }
 
-                  if (selfStat < teamStat) {
+                  if (parseInt(selfStat) < parseInt(teamStat)) {
                     teamStats[team.MatchupTeam].winNumber++;
-                  } else if (selfStat > teamStat) {
+                  } else if (parseInt(selfStat) > parseInt(teamStat)) {
                     teamStats[team.MatchupTeam].lossNumber++;
                   } else {
                     teamStats[team.MatchupTeam].tieNumber++;
