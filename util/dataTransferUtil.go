@@ -4,6 +4,8 @@ import (
     "fmt"
 )
 
+const leagueSize = 12
+
 func YahooToMongo(database string, collection string, accessToken string) () {
     var yahooRoster string
     var yahooMatchup string
@@ -16,7 +18,7 @@ func YahooToMongo(database string, collection string, accessToken string) () {
 
     if collection == "rosters" {
         var rosterBytes []byte
-        for i := 1; i <= 12; i++ {
+        for i := 1; i <= leagueSize; i++ {
             rosterBytes, yahooErr = RetrieveYahooRoster(accessToken, i)
             yahooRoster = string(rosterBytes)
 
