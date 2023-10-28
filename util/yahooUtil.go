@@ -2,6 +2,7 @@ package util
 
 import (
     "fmt"
+    "strconv"
 	"encoding/json"
 	"encoding/xml"
 
@@ -31,13 +32,13 @@ type Player struct {
     Position string   `xml:"display_position"`
 }
 
-func RetrieveYahooRoster(accessToken string) ([]byte, error) {
+func RetrieveYahooRoster(accessToken string, teamID int) ([]byte, error) {
     config, configErr := config.ReadConfig(CONFIG_FILE_PATH)
     if configErr != nil {
         return nil, configErr
     }
 
-    yahooAPIURL := config.YahooTeamURL + "/" + config.YahooYearID + ".l." + config.YahooLeagueID + ".t." + config.YahooTeamID + "/roster"
+    yahooAPIURL := config.YahooTeamURL + "/" + config.YahooYearID + ".l." + config.YahooLeagueID + ".t." + strconv.Itoa(teamID) + "/roster"
     yahooAPIBody, yahooAPIErr := GetAPI(yahooAPIURL, accessToken)
     if yahooAPIErr != nil {
         return nil, fmt.Errorf("Error requesting GET API: %v", yahooAPIErr)
@@ -60,10 +61,16 @@ func RetrieveYahooRoster(accessToken string) ([]byte, error) {
         playersWithTeam[i] = playerData
     }
 
+    isSelfTeam := false
+    if strconv.Itoa(teamID) == config.YahooTeamID {
+        isSelfTeam = true
+    }
+
     // Create the desired JSON structure
     resultJSON := map[string]interface{}{
         "Roster":       playersWithTeam,
         "Fantasy Team": fc.Team.Name,
+        "isSelfTeam": isSelfTeam,
     }
 
     // Convert the JSON to a formatted string

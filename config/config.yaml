@@ -2,20 +2,115 @@ yahoo_redirect_uri: "https://localhost"
 yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
 yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 
-# Jimmy's Fantasy Team
-yahoo_year_id: "428"
-yahoo_league_id: "103875"
-yahoo_team_id: "1"
+# mxm
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "1"
 
-# Giannis
+# grdz
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "2"
+
+# Boston Lakers
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "3"
+
+# Rustin Aeaves
+yahoo_year_id: "428"
+yahoo_league_id: "57655"
+yahoo_team_id: "4"
+
+# Livin' La Vida Luka
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "5"
+
+# NBA LongBoy
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "6"
+
+# Abominable Snowman
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "7"
+
+# Rob Pelinka
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "8"
+
+# I.GUO.D.O.L.L.A
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "9"
+
+# I like Poeltl
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "10"
+
+# Ghai Silgeous
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "11"
+
+# TTc8
+# yahoo_year_id: "428"
+# yahoo_league_id: "57655"
+# yahoo_team_id: "12"
+
+# Myrese Taxey
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "1"
+
+# Aiannis Gntetokounmpo
 # yahoo_year_id: "428"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "2"
 
-# Brazilianaire
+# Zvica Iubac
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "3"
+
+# Bruce Brown
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "4"
+
+# Slim Shai-dy
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "5"
+
+# Cohn Jollins
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "6"
+
+# Los Dodgers
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "7"
+
+# Lamelo Balls
 # yahoo_year_id: "428"
 # yahoo_league_id: "103875"
 # yahoo_team_id: "8"
+
+# Luck the Fakers
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "9"
+
+# Hunghuei
+# yahoo_year_id: "428"
+# yahoo_league_id: "103875"
+# yahoo_team_id: "10"
 
 # Sarcus Mmart
 # yahoo_year_id: "418"
