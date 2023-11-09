@@ -114,37 +114,6 @@ function Home() {
       });
   }, []);
 
-  const calculateField = (field) => {
-    if (!gameData || !data || !projectionData) return 0;
-
-    return gameData.data.reduce((total, game) => {
-      const playersForDate = data
-        .flatMap((player) => player.Roster)
-        .filter((playerData) => game.teams.includes(playerData.Team));
-
-      const sumForField = playersForDate.reduce((sum, playerData) => {
-        const matchedPlayer = projectionData.find((player) => player.name === playerData.Player);
-        return matchedPlayer ? sum + +matchedPlayer[field] : sum;
-      }, 0);
-
-      return total + sumForField;
-    }, 0);
-  };
-
-  const calculateFieldGoalPercentage = () => {
-    const fieldGoalsMade = calculateField('fieldGoalMadeCalculated');
-    const fieldGoalAttempts = calculateField('fieldGoalAttempt');
-    const percentage = (fieldGoalsMade / fieldGoalAttempts) * 100;
-    return isNaN(percentage) ? '0.00' : percentage.toFixed(3);
-  };
-
-  const calculateFreeThrowPercentage = () => {
-    const freeThrowsMade = calculateField('freeThrowMadeCalculated');
-    const freeThrowAttempts = calculateField('freeThrowAttempt');
-    const percentage = (freeThrowsMade / freeThrowAttempts) * 100;
-    return isNaN(percentage) ? '0.00' : percentage.toFixed(3);
-  };
-
   const statIdToLabel = {
     "9004003": "FGM/FGA",
     "5": "FG",
@@ -158,51 +127,6 @@ function Home() {
     "18": "BLK",
     "19": "TO"
   };
-
-  let threePointMadeSortedTeams;
-  let pointSortedTeams;
-  let selfThreePointMadeRank;
-  let selfPointRank;
-
-  if (teams) {
-      threePointMadeSortedTeams = teams.slice().sort((teamA, teamB) => {
-        const sumA = calculateThreePointMadeSum(teamA.Roster);
-        const sumB = calculateThreePointMadeSum(teamB.Roster);
-        return sumB - sumA;
-      });
-      selfThreePointMadeRank = threePointMadeSortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
-
-      pointSortedTeams = teams.slice().sort((teamA, teamB) => {
-        const sumA = calculatePointSum(teamA.Roster);
-        const sumB = calculatePointSum(teamB.Roster);
-        return sumB - sumA;
-      });
-      selfPointRank = pointSortedTeams.findIndex(team => team['Fantasy Team'] === selfTeamName) + 1;
-  }
-
-  function calculateThreePointMadeSum(roster) {
-    const threePointMadeSum = roster.reduce((sum, playerData) => {
-      if (projectionData) {
-        const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
-        return matchingProjection ? sum + parseFloat(matchingProjection.threePointMade) : sum;
-      } else {
-        return sum;
-      }
-    }, 0);
-    return threePointMadeSum;
-  }
-
-  function calculatePointSum(roster) {
-    const pointSum = roster.reduce((sum, playerData) => {
-      if (projectionData) {
-        const matchingProjection = projectionData.find(projection => projection.name === playerData.Player);
-        return matchingProjection ? sum + parseFloat(matchingProjection.points) : sum;
-      } else {
-        return sum;
-      }
-    }, 0);
-    return pointSum;
-  }
 
   return (
     <>
@@ -520,7 +444,6 @@ function Home() {
             </thead>
             <tbody>
               {teams.map((team, teamIndex) => {
-              {/* {sortedTeams.map((team, teamIndex) => { */}
                 const teamPlayers = team.Roster;
                 const teamName = team['Fantasy Team'];
 
