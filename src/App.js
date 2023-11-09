@@ -207,7 +207,7 @@ function Home() {
   return (
     <>
     <div style={{ marginLeft: '20px' }}>
-      {data && projectionData && gameData ? (
+      {data && projectionData && gameData && matchupData && selfTeamName ? (
         <div>
           <table className="bordered-table">
             <thead className="header-row">
@@ -295,7 +295,7 @@ function Home() {
               })}
 
               {/* TOTAL row */}
-              <tr>
+              {/* <tr>
                 <td className="bold centered">TOTAL</td>
                 <td className="bold centered"></td>
                 <td className="bold centered"></td>
@@ -313,6 +313,42 @@ function Home() {
                 <td className="bold centered">{Number(calculateField('steals')).toFixed(1)}</td>
                 <td className="bold centered">{Number(calculateField('blocks')).toFixed(1)}</td>
                 <td className="bold centered">{Number(calculateField('turnovers')).toFixed(1)}</td>
+              </tr> */}
+
+              <tr>
+                <td>Current matchup</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                {matchupData[0]?.Matchup.map((matchup, matchupIndex) => {
+                  if (matchup.MatchupTeam === selfTeamName) {
+                    const statCells = matchup.Stats.map((stat, index) => {
+                      // Check if StatValue is in the format "x/y"
+                      const statParts = stat.StatValue.split('/');
+
+                      if (statParts.length === 2) {
+                        // If it's in the "x/y" format, create separate <td> for "x" and "y"
+                        return (
+                          <React.Fragment key={index}>
+                            <td className="bold centered">{statParts[0]}</td>
+                            <td className="bold centered">{statParts[1]}</td>
+                          </React.Fragment>
+                        );
+                      } else if (!stat.StatValue.includes('.')) {
+                        // If not in "x/y" format, create a single <td> with the original value
+                        return <td className="bold centered" key={index}>{stat.StatValue}</td>;
+                      } else {
+                        return <td></td>;
+                      }
+                    });
+
+                    return (
+                      <React.Fragment key={matchupIndex}>
+                        {statCells}
+                      </React.Fragment>
+                    );
+                  }
+                })}
               </tr>
 
             </tbody>
