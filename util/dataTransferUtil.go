@@ -4,7 +4,6 @@ import (
     "fmt"
     "encoding/json"
     "time"
-    "strconv"
 )
 
 const leagueSize = 12
@@ -27,7 +26,8 @@ func YahooToMongo(database string, collection string, accessToken string) () {
 
             if yahooErr != nil {
                 fmt.Println(yahooErr)
-                return
+                break
+                // return
             }
 
             mongoInsertErr := InsertOneDocument("Cluster0", database, collection, yahooRoster)
@@ -36,55 +36,65 @@ func YahooToMongo(database string, collection string, accessToken string) () {
             }
         }
 
+        // Draft Bid Effect
         for {
             var draftBytes []byte
             var yahooDraftResults string
 
             draftBytes, yahooErr = RetrieveYahooDraftResults(accessToken)
-            yahooDraftResults = string(draftBytes)
+            if yahooErr != nil {
+                fmt.Println(yahooErr)
+                break
+            } else {
+                yahooDraftResults = string(draftBytes)
 
-            team1 := "428.l.57655.t.4"
-            team2 := "428.l.57655.t.8"
-            teams := []string{team1, team2}
+                team1 := "454.l.47273.t.1"
+                team2 := "454.l.47273.t.2"
+                teams := []string{team1, team2}
 
-            var results struct {
-                Budgets []struct {
-                    AvgBudget string `json:"Avg-Budget"`
-                    Budget    string `json:"Budget"`
-                    TeamKey   string `json:"TeamKey"`
-                } `json:"budgets"`
-            }
-
-            if err := json.Unmarshal([]byte(yahooDraftResults), &results); err != nil {
-                fmt.Println("Error unmarshaling JSON:", err)
-                return
-            }
-
-            for _, team := range teams {
-                mongoDeleteErr := DeleteDocuments("Cluster0", database, "draft-" + team)
-                if mongoDeleteErr != nil {
-                    fmt.Println("Error:", mongoDeleteErr)
+                var results struct {
+                    Budgets []struct {
+                        AvgBudget string `json:"Avg-Budget"`
+                        Budget    string `json:"Budget"`
+                        TeamKey   string `json:"TeamKey"`
+                        SelfCost  float64 `json:"SelfCost"`
+                        AvgCost   float64 `json:"AvgCost"`
+                    } `json:"budgets"`
                 }
 
-                var yahooTeamDraftResults string
-                for _, budget := range results.Budgets {
-                    if budget.TeamKey == team {
-                        // Construct the desired output
-                        myBudget, _ := strconv.ParseFloat(budget.Budget, 64)
-                        avgBudget, _ := strconv.ParseFloat(budget.AvgBudget, 64)
-                        yahooTeamDraftResults = fmt.Sprintf(`{"priceAdjustment":"%.2f", "avgBudget": "%s"}`, float64((myBudget - avgBudget) / leagueSize), budget.AvgBudget)
-                        break
+                fmt.Println("yahooDraftResults:", yahooDraftResults)
+
+                if err := json.Unmarshal([]byte(yahooDraftResults), &results); err != nil {
+                    fmt.Println("Error unmarshaling JSON:", err)
+                    return
+                }
+
+                for _, team := range teams {
+                    mongoDeleteErr := DeleteDocuments("Cluster0", database, "draft-" + team)
+                    if mongoDeleteErr != nil {
+                        fmt.Println("Error:", mongoDeleteErr)
+                    }
+
+                    var yahooTeamDraftResults string
+                    for _, budget := range results.Budgets {
+                        if budget.TeamKey == team {
+                            // Construct the desired output
+                            myAvgCost := budget.SelfCost
+                            leagueAvgCost := budget.AvgCost
+                            yahooTeamDraftResults = fmt.Sprintf(`{"priceAdjustment":"%.2f", "avgSelfCost": "%s"}`, float64(myAvgCost - leagueAvgCost), budget.SelfCost)
+                            break
+                        }
+                    }
+
+                    fmt.Println("Inserting: ", yahooTeamDraftResults)
+                    mongoInsertErr := InsertOneDocument("Cluster0", database, "draft-" + team, yahooTeamDraftResults)
+                    if mongoInsertErr != nil {
+                        fmt.Println("Error:", mongoInsertErr)
                     }
                 }
 
-                fmt.Println("Inserting: ", yahooTeamDraftResults)
-                mongoInsertErr := InsertOneDocument("Cluster0", database, "draft-" + team, yahooTeamDraftResults)
-                if mongoInsertErr != nil {
-                    fmt.Println("Error:", mongoInsertErr)
-                }
+                time.Sleep(10 * time.Second)
             }
-
-            time.Sleep(10 * time.Second)
         }
     } else {
         var matchupBytes []byte

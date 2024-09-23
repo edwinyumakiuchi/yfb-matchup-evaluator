@@ -9,6 +9,16 @@ import (
 	"yfb-matchup-evaluator/config"
 )
 
+/* type FantasyYearContent struct {
+    XMLName xml.Name `xml:"fantasy_content"`
+    YearGame    YearGame     `xml:"game"`
+}
+
+type YearGame struct {
+    XMLName xml.Name `xml:"game"`
+    YearGameKey    int     `xml:"game_key"`
+} */
+
 type FantasyContent struct {
     XMLName xml.Name `xml:"fantasy_content"`
     Team    Team     `xml:"team"`
@@ -22,6 +32,7 @@ type FantasyLeagueContent struct {
 type DraftLeague struct {
     XMLName        xml.Name        `xml:"league"`
     DraftResults   []DraftResult   `xml:"draft_results>draft_result"`
+    Name           string          `xml:"name"`
 }
 
 type DraftResult struct {
@@ -104,6 +115,19 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
         return nil, configErr
     }
 
+    /* yahooLeagueAPIURL := "https://fantasysports.yahooapis.com/fantasy/v2/game/nba"
+    fmt.Println("yahooLeagueAPIURL: ", yahooLeagueAPIURL)
+    yahooLeagueAPIBody, yahooLeagueAPIErr := GetAPI(yahooLeagueAPIURL, accessToken)
+    if yahooLeagueAPIErr != nil {
+        return nil, fmt.Errorf("Error requesting GET API: %v", yahooLeagueAPIErr)
+    }
+    var yfc FantasyYearContent
+    xmlYearErr := xml.Unmarshal(yahooLeagueAPIBody, &yfc)
+    if xmlYearErr != nil {
+        return nil, fmt.Errorf("Error while parsing XML: %v", xmlYearErr)
+    }
+    fmt.Println("yfc: ", yfc) */
+
     yahooAPIURL := config.YahooLeagueURL + config.YahooYearID + ".l." + config.YahooLeagueID + "/draftresults"
     yahooAPIBody, yahooAPIErr := GetAPI(yahooAPIURL, accessToken)
     if yahooAPIErr != nil {
@@ -127,8 +151,12 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
     }
 
 	// Resulting map to store aggregated data
-	aggregatedData := make(map[string]map[string]string)
+	var aggregatedData = make(map[string]map[string]interface{})
+	leagueSize := 10
+    var numPlayerPerTeam int = 13
 	totalCost := 0
+	// total number of players remaining to be drafted
+	totalPlayerSlotRemaining := leagueSize * numPlayerPerTeam
 
 	for _, data := range draftData {
 		costStr := data["Cost"]
@@ -141,52 +169,68 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 			continue
 		}
 		totalCost += cost
+		totalPlayerSlotRemaining--
 
 		// Check if the TeamKey already exists in the aggregatedData
 		if _, exists := aggregatedData[teamKey]; exists {
 			// If exists, add to the existing cost
-			existingCost, _ := strconv.Atoi(aggregatedData[teamKey]["Budget"])
-			aggregatedData[teamKey]["Budget"] = strconv.Itoa(existingCost + cost)
+			existingCost, _ := aggregatedData[teamKey]["Budget"].(int)
+			aggregatedData[teamKey]["Budget"] = existingCost + cost
+			aggregatedData[teamKey]["NumPlayerLeft"] = aggregatedData[teamKey]["NumPlayerLeft"].(int) - 1
 		} else {
 			// If not exists, create a new entry
-			aggregatedData[teamKey] = map[string]string{
-				"Budget":    costStr,
-				"TeamKey": teamKey,
-			}
+            aggregatedData[teamKey] = map[string]interface{}{
+                "Budget":       cost,
+                "TeamKey":      teamKey,
+                "NumPlayerLeft": numPlayerPerTeam - 1, // Stored as an int
+            }
 		}
 	}
 
+	if (totalPlayerSlotRemaining == 0) {
+	    return nil, fmt.Errorf("Remaining player slot is 0, draft has ended!")
+	}
+
 	for teamKey, budget := range aggregatedData {
-		ownCost, _ := strconv.Atoi(budget["Budget"])
+	    if (budget["NumPlayerLeft"].(int) == 0) {
+	        totalCost -= budget["Budget"].(int)
+	        continue
+	    }
+
+		ownCost, _ := budget["Budget"].(int)
 
 		// Calculate total cost excluding the current team
-		otherTotal := totalCost - ownCost
-		otherCount := len(aggregatedData) - 1 // Subtracting one if this team is included
+		otherTotal := (200 * (leagueSize - 1)) - (totalCost - ownCost)
+		// Total number of players remaining to be drafted for the rest of the league
+		otherPlayerSlotRemaining := totalPlayerSlotRemaining - budget["NumPlayerLeft"].(int)
 
+        // Average cost per player for the league
 		var avgCost float64
-		if otherCount > 0 {
-			avgCost = float64(otherTotal) / float64(otherCount)
-		}
+		avgCost = float64(otherTotal) / float64(otherPlayerSlotRemaining)
 
 		// Add Avg-Cost to the current budget entry
-		budget["Avg-Budget"] = fmt.Sprintf("%.2f", avgCost)
+		budget["Avg-Cost"] = fmt.Sprintf("%.2f", avgCost)
 		aggregatedData[teamKey] = budget // Update the aggregated data
 	}
 
 	// Prepare the final output in the desired format
-	teamBudgets := make([]map[string]string, 0)
+	teamBudgets := make([]map[string]interface{}, 0) // Change to interface{}
 	for _, teamData := range aggregatedData {
-		teamBudgets = append(teamBudgets, teamData)
+	    if (teamData["NumPlayerLeft"].(int) != 0) {
+		    teamBudgets = append(teamBudgets, teamData)
+		}
 	}
 
 	for _, budget := range teamBudgets {
-		// Update Avg-Cost
-		avgCost, _ := strconv.ParseFloat(budget["Avg-Budget"], 64)
-		budget["Avg-Budget"] = fmt.Sprintf("%.2f", 200.0-avgCost)
-
 		// Update Cost
-		cost, _ := strconv.Atoi(budget["Budget"])
-		budget["Budget"] = strconv.Itoa(200 - cost)
+		cost, _ := budget["Budget"]
+		ownPlayerLeft, _ := budget["NumPlayerLeft"]
+
+        // Average cost per player for self
+		var avgSelfCost float64
+		avgSelfCost = float64(cost.(int)) / float64(ownPlayerLeft.(int))
+
+		budget["SelfCost"] = avgSelfCost
 	}
 
 	finalResult := map[string]interface{}{

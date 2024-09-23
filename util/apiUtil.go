@@ -21,7 +21,7 @@ func GetAPI(endpoint string, accessToken string) ([]byte, error) {
     defer apiResp.Body.Close()
 
     if apiResp.StatusCode != http.StatusOK {
-        return nil, fmt.Errorf("API responded with status code %d", apiResp.StatusCode)
+        return nil, fmt.Errorf("API with endpoint %s responded with status code %d", endpoint, apiResp.StatusCode)
     }
 
     apiBody, apiErr := io.ReadAll(apiResp.Body)
