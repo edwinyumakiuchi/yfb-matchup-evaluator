@@ -93,14 +93,12 @@ func RetrieveYahooRoster(accessToken string, teamID int) ([]byte, error) {
         isSelfTeam = true
     }
 
-    // Create the desired JSON structure
     resultJSON := map[string]interface{}{
         "Roster":       playersWithTeam,
         "Fantasy Team": fc.Team.Name,
         "isSelfTeam": isSelfTeam,
     }
 
-    // Convert the JSON to a formatted string
     jsonBytes, jsonErr := json.MarshalIndent(resultJSON, "", "  ")
     if jsonErr != nil {
         return nil, fmt.Errorf("Error while converting to JSON: %v", jsonErr)
@@ -140,20 +138,27 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
         return nil, fmt.Errorf("Error while parsing XML: %v", xmlErr)
     }
 
+    // DELETEME
+    // fc.DraftLeague.DraftResults = fc.DraftLeague.DraftResults[:len(fc.DraftLeague.DraftResults)-154]
+    // fmt.Println("Modified fc:", fc)
+
     draftData := make(map[int]map[string]string)
     for i, draftResult := range fc.DraftLeague.DraftResults {
-        // Create a nested map for Cost and TeamKey
-        data := map[string]string{
-            "Cost":    strconv.Itoa(draftResult.Cost),
-            "TeamKey": draftResult.TeamKey,
+        if draftResult.Cost != 0 {
+            data := map[string]string{
+                "Cost":    strconv.Itoa(draftResult.Cost),
+                "TeamKey": draftResult.TeamKey,
+            }
+            draftData[i] = data
         }
-        draftData[i] = data // Assign the nested map to the outer map using the index as key
+    }
+    if len(draftData) == 0 {
+        return nil, fmt.Errorf("Draft has not started.")
     }
 
-	// Resulting map to store aggregated data
 	var aggregatedData = make(map[string]map[string]interface{})
-	leagueSize := 10
-    var numPlayerPerTeam int = 13
+	leagueSize, _ := strconv.Atoi(config.LeagueSize)
+    numPlayerPerTeam, _ := strconv.Atoi(config.RosterSize)
 	totalCost := 0
 	// total number of players remaining to be drafted
 	totalPlayerSlotRemaining := leagueSize * numPlayerPerTeam
@@ -162,7 +167,6 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 		costStr := data["Cost"]
 		teamKey := data["TeamKey"]
 
-		// Convert cost to integer
 		cost, err := strconv.Atoi(costStr)
 		if err != nil {
 			fmt.Println("Error converting cost:", err)
@@ -171,7 +175,7 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 		totalCost += cost
 		totalPlayerSlotRemaining--
 
-		// Check if the TeamKey already exists in the aggregatedData
+		// Check if the TeamKey already exists
 		if _, exists := aggregatedData[teamKey]; exists {
 			// If exists, add to the existing cost
 			existingCost, _ := aggregatedData[teamKey]["Budget"].(int)
@@ -180,10 +184,24 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 		} else {
 			// If not exists, create a new entry
             aggregatedData[teamKey] = map[string]interface{}{
-                "Budget":       cost,
+                "Budget":       cost,  // Budget spent
                 "TeamKey":      teamKey,
-                "NumPlayerLeft": numPlayerPerTeam - 1, // Stored as an int
+                "NumPlayerLeft": numPlayerPerTeam - 1,
             }
+		}
+	}
+
+	for i := 1; i <= leagueSize; i++ {
+		teamKey := fmt.Sprintf(config.YahooYearID + ".l." + config.YahooLeagueID + ".t.%d", i)
+
+		// Check if the team key exists
+		if _, exists := aggregatedData[teamKey]; !exists {
+			// If it does not exist, create a new entry
+			aggregatedData[teamKey] = map[string]interface{}{
+				"Budget":        0,
+				"NumPlayerLeft": numPlayerPerTeam,
+				"TeamKey":      teamKey,
+			}
 		}
 	}
 
@@ -203,18 +221,19 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 		otherTotal := (200 * (leagueSize - 1)) - (totalCost - ownCost)
 		// Total number of players remaining to be drafted for the rest of the league
 		otherPlayerSlotRemaining := totalPlayerSlotRemaining - budget["NumPlayerLeft"].(int)
+        if otherPlayerSlotRemaining == 0 {
+            return nil, fmt.Errorf("Only one team remaining to draft.")
+        }
 
-        // Average cost per player for the league
 		var avgCost float64
 		avgCost = float64(otherTotal) / float64(otherPlayerSlotRemaining)
 
-		// Add Avg-Cost to the current budget entry
-		budget["Avg-Cost"] = fmt.Sprintf("%.2f", avgCost)
-		aggregatedData[teamKey] = budget // Update the aggregated data
+		// Average cost per player for the rest of the league
+		budget["AvgCost"] = fmt.Sprintf("%.2f", avgCost)
+		aggregatedData[teamKey] = budget
 	}
 
-	// Prepare the final output in the desired format
-	teamBudgets := make([]map[string]interface{}, 0) // Change to interface{}
+	teamBudgets := make([]map[string]interface{}, 0)
 	for _, teamData := range aggregatedData {
 	    if (teamData["NumPlayerLeft"].(int) != 0) {
 		    teamBudgets = append(teamBudgets, teamData)
@@ -222,19 +241,18 @@ func RetrieveYahooDraftResults(accessToken string) ([]byte, error) {
 	}
 
 	for _, budget := range teamBudgets {
-		// Update Cost
 		cost, _ := budget["Budget"]
 		ownPlayerLeft, _ := budget["NumPlayerLeft"]
 
         // Average cost per player for self
 		var avgSelfCost float64
-		avgSelfCost = float64(cost.(int)) / float64(ownPlayerLeft.(int))
+		avgSelfCost = (200 - float64(cost.(int))) / float64(ownPlayerLeft.(int))
 
 		budget["SelfCost"] = avgSelfCost
 	}
 
 	finalResult := map[string]interface{}{
-		"budgets": teamBudgets, // Key name can be changed as needed
+		"budgets": teamBudgets,
 	}
 
 	budgetJsonData, err := json.Marshal(finalResult)

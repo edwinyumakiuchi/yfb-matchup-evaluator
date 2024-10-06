@@ -16,6 +16,9 @@ type Config struct {
     YahooLeagueID     string `yaml:"yahoo_league_id"`
     YahooTeamID       string `yaml:"yahoo_team_id"`
 
+    LeagueSize        string `yaml:"league_size"`
+    RosterSize        string `yaml:"roster_size"`
+
 	MongoKey          string `yaml:"mongo_key"`
 	MongoUsername     string `yaml:"mongo_username"`
 	MongoPassword     string `yaml:"mongo_password"`

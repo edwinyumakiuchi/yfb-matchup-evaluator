@@ -4,6 +4,9 @@ import (
     "fmt"
     "encoding/json"
     "time"
+    "strconv"
+
+    "yfb-matchup-evaluator/config"
 )
 
 const leagueSize = 12
@@ -42,31 +45,31 @@ func YahooToMongo(database string, collection string, accessToken string) () {
             var yahooDraftResults string
 
             draftBytes, yahooErr = RetrieveYahooDraftResults(accessToken)
-            if yahooErr != nil {
+            if yahooErr != nil && yahooErr.Error() != "Draft has not started." {
                 fmt.Println(yahooErr)
                 break
             } else {
                 yahooDraftResults = string(draftBytes)
 
-                team1 := "454.l.47273.t.1"
-                team2 := "454.l.47273.t.2"
-                teams := []string{team1, team2}
+                config, _ := config.ReadConfig(CONFIG_FILE_PATH)
+                team1 := config.YahooYearID + ".l." + config.YahooLeagueID + ".t." + config.YahooTeamID
+                teams := []string{team1}
 
                 var results struct {
                     Budgets []struct {
                         AvgBudget string `json:"Avg-Budget"`
-                        Budget    string `json:"Budget"`
+                        Budget    float64 `json:"Budget"`
                         TeamKey   string `json:"TeamKey"`
                         SelfCost  float64 `json:"SelfCost"`
-                        AvgCost   float64 `json:"AvgCost"`
+                        AvgCost   string `json:"AvgCost"`
                     } `json:"budgets"`
                 }
 
-                fmt.Println("yahooDraftResults:", yahooDraftResults)
-
-                if err := json.Unmarshal([]byte(yahooDraftResults), &results); err != nil {
-                    fmt.Println("Error unmarshaling JSON:", err)
-                    return
+                if yahooErr == nil {
+                    if err := json.Unmarshal([]byte(yahooDraftResults), &results); err != nil {
+                        fmt.Println("Error unmarshaling yahooDraftResults:", err)
+                        return
+                    }
                 }
 
                 for _, team := range teams {
@@ -76,21 +79,36 @@ func YahooToMongo(database string, collection string, accessToken string) () {
                     }
 
                     var yahooTeamDraftResults string
-                    for _, budget := range results.Budgets {
-                        if budget.TeamKey == team {
-                            // Construct the desired output
-                            myAvgCost := budget.SelfCost
-                            leagueAvgCost := budget.AvgCost
-                            yahooTeamDraftResults = fmt.Sprintf(`{"priceAdjustment":"%.2f", "avgSelfCost": "%s"}`, float64(myAvgCost - leagueAvgCost), budget.SelfCost)
-                            break
+                    if yahooErr != nil && yahooErr.Error() == "Draft has not started." {
+                        yahooTeamDraftResults = fmt.Sprintf(`{"priceAdjustment":"%.2f", "avgSelfCost": "%s"}`, float64(0), "15")
+                    } else {
+                        for _, budget := range results.Budgets {
+                            if budget.TeamKey == team {
+                                myAvgCost := budget.SelfCost
+                                leagueAvgCost, _ := strconv.ParseFloat(budget.AvgCost, 64)
+                                yahooTeamDraftResults = fmt.Sprintf(`{"priceAdjustment":"%.2f", "avgSelfCost": "%s"}`, float64(myAvgCost - leagueAvgCost), budget.SelfCost)
+                                break
+                            }
                         }
                     }
 
-                    fmt.Println("Inserting: ", yahooTeamDraftResults)
-                    mongoInsertErr := InsertOneDocument("Cluster0", database, "draft-" + team, yahooTeamDraftResults)
+                    type DraftResults struct {
+                    	PriceAdjustment string `json:"priceAdjustment"`
+                    	AvgSelfCost     string `json:"avgSelfCost"`
+                    }
+
+                    var results DraftResults
+                    err := json.Unmarshal([]byte(yahooTeamDraftResults), &results)
+                    if err != nil {
+                        fmt.Println("Error unmarshalling yahooTeamDraftResults:", err)
+                        return
+                    }
+                    fmt.Println("Price Adjustment: ", results.PriceAdjustment)
+
+                    /* mongoInsertErr := InsertOneDocument("Cluster0", database, "draft-" + team, yahooTeamDraftResults)
                     if mongoInsertErr != nil {
                         fmt.Println("Error:", mongoInsertErr)
-                    }
+                    } */
                 }
 
                 time.Sleep(10 * time.Second)

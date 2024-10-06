@@ -3,11 +3,30 @@ yahoo_team_url: "https://fantasysports.yahooapis.com/fantasy/v2/team/"
 yahoo_league_url: "https://fantasysports.yahooapis.com/fantasy/v2/league/"
 
 # Test League
-yahoo_year_id: "454"
-yahoo_league_id: "47273"
-yahoo_team_id: "1"
+#league_size: 10
+#roster_size: 13
+#yahoo_year_id: "454"
+#yahoo_league_id: "47273"
+#yahoo_team_id: "1"
 
 ############################
+
+
+# Rustin Aeaves
+#league_size: 12
+#roster_size: 13
+#yahoo_year_id: "454"
+#yahoo_league_id: "93404"
+#yahoo_team_id: "4"
+
+############################
+
+# Rustin Aeaves
+league_size: 12
+roster_size: 13
+yahoo_year_id: "428"
+yahoo_league_id: "57655"
+yahoo_team_id: "4"
 
 # mxm
 # yahoo_year_id: "428"
@@ -23,11 +42,6 @@ yahoo_team_id: "1"
 # yahoo_year_id: "428"
 # yahoo_league_id: "57655"
 # yahoo_team_id: "3"
-
-# Rustin Aeaves
-# yahoo_year_id: "428"
-# yahoo_league_id: "57655"
-# yahoo_team_id: "4"
 
 # Livin' La Vida Luka
 # yahoo_year_id: "428"
